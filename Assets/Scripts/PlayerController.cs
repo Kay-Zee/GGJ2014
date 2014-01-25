@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
 	private bool gameStarted = false;
-	private bool System.DateTime.;
+	//private bool System.DateTime.;
 
 
 	[HideInInspector]
