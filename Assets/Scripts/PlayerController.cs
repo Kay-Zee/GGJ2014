@@ -8,9 +8,10 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector]
 	public bool jump = false;				// Condition for whether the player should jump.
 	[HideInInspector]
-	public bool spring = false;				// Condition for whether the player should spring.
+	public bool[] spring = {false, false, false};				// Condition for whether the player should spring.
 	private bool springing = false;
-	private bool ladder = false;
+	private bool[] ladder = {false, false, false};
+	private bool[] hit = {false, false, false};
 	
 	// Energy Controls
 	[HideInInspector]
@@ -23,6 +24,9 @@ public class PlayerController : MonoBehaviour
 	public Texture2D redTex;
 	public Texture2D greenTex; 
 	public Texture2D blueTex;
+
+	private Behaviour redLayer, greenLayer, blueLayer;
+
 
 
 	private float activationEnergy = 10f;
@@ -54,9 +58,28 @@ public class PlayerController : MonoBehaviour
 
 	void Awake()
 	{
+
 		greenEnergy = 50;
 		redEnergy = 50;
 		blueEnergy = 50;
+
+		redLayer = (Behaviour)Camera.main.GetComponent ("Red");
+		greenLayer = (Behaviour)Camera.main.GetComponent ("Green");
+		blueLayer = (Behaviour)Camera.main.GetComponent ("Blue");
+		if (redLayer!=null)
+			redLayer.enabled = false;
+		if (greenLayer!=null)
+			greenLayer.enabled = false;
+		if (blueLayer!=null)
+			blueLayer.enabled = false;
+		// Setting up booleans
+		spring = new bool[3];	
+		Populate(spring, false);
+		springing = false;
+		Populate(ladder, false);
+		ladder = new bool[3];	
+		Populate(hit, false);
+		hit = new bool[3];	
 		// Setting up references.
 		groundCheck = transform.Find("groundCheck");
 		ladderCheck = transform.Find("ladderCheck");
@@ -68,17 +91,29 @@ public class PlayerController : MonoBehaviour
 	{
 		// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
 		grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));  
-		if (green && Physics2D.Linecast (transform.position, ladderCheck.position, 1 << LayerMask.NameToLayer ("GreenLadder"))) {
-			rigidbody2D.gravityScale=0f;
-			ladder = true;
-		} else {
-			rigidbody2D.gravityScale=1f;
-			ladder = false;
+		Populate (ladder, false);
+		RaycastHit2D hitBlue, hitGreen, hitRed;
+		if (red){
+			hit[0] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
+			hitRed = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
+			if (hit[0]) 
+				performAction(hitRed,0);
 		}
-		if (!springing && blue)
-			spring = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("BlueTrampoline"));  
+		if (green){
+			hit[1] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Green"));  
+			hitGreen = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Green"));  
+			if (hit[1])
+				performAction (hitGreen,1);
+		}
+		if (blue){
+			hit[2] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Blue"));  
+			hitBlue = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Blue"));  
+			if (hit[2]) 
+				performAction (hitBlue, 2);
+		}
 
-		if(spring)
+
+		if(consolidateBoolArray(spring))
 		{
 			springing = true;
 			Invoke("allowSpring",0.1f);
@@ -93,11 +128,17 @@ public class PlayerController : MonoBehaviour
 			rigidbody2D.AddForce(new Vector2(0f, jumpForce*2));
 			
 			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
-			spring = false;
+			Populate(spring,false);
 			
 		}
 
 
+		if (consolidateBoolArray(ladder)) {
+			rigidbody2D.gravityScale=0f;
+
+		} else {
+			rigidbody2D.gravityScale=1f;
+		}
 
 		// If the jump button is pressed and the player is grounded then the player should jump.
 		if(Input.GetButtonDown("Jump") && grounded)
@@ -105,22 +146,34 @@ public class PlayerController : MonoBehaviour
 		if (Input.GetButtonDown ("Green")) {
 			if (!green && greenEnergy-activationEnergy>0){
 				green = true;
+				if (greenLayer!=null)
+					greenLayer.enabled=true;
 			} else {
 				green = false;
+				if (greenLayer!=null)
+					greenLayer.enabled=false;
 			}
 		}
 		if (Input.GetButtonDown ("Red")) {
 			if (!red && redEnergy-activationEnergy>0){
 				red = true;
+				if (redLayer!=null)
+					redLayer.enabled=true;
 			} else {
 				red = false;
+				if (redLayer!=null)
+					redLayer.enabled=false;
 			}
 		}
 		if (Input.GetButtonDown ("Blue")) {
 			if (!blue && blueEnergy-activationEnergy>0){
 				blue = true;
+				if (blueLayer!=null)
+					blueLayer.enabled=true;
 			} else {
 				blue = false;
+				if (blueLayer!=null)
+					blueLayer.enabled=false;
 			}
 		}
 		if (Input.GetButtonDown ("Reset")) {
@@ -136,11 +189,11 @@ public class PlayerController : MonoBehaviour
 		float h = Input.GetAxis("Horizontal");
 		float v = Input.GetAxis ("Vertical");
 
-		if (ladder){
+		if (consolidateBoolArray(ladder)){
 			if (v > 0) {
-				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 10  );
+				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 5  );
 			} else if (v < 0) {
-				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , -10  );
+				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , -5  );
 			} else {
 				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 0  );
 			}
@@ -230,11 +283,34 @@ public class PlayerController : MonoBehaviour
 		springing = false;
 	}
 
+	bool consolidateBoolArray(bool[] array){
+		bool returnBool = false;
+		for (int i = 0; i< array.Length; i++) {
+			returnBool = returnBool || array[i];	
+		}
+		return returnBool;
+	}
+
+	public void Populate(bool[] arr, bool value ){
+		for ( int i = 0; i < arr.Length;i++ ) {
+			arr[i] = value;
+		}
+	}
+
+	void performAction(RaycastHit2D hit, int index){
+		if (hit.collider.gameObject.tag == "Trampoline" && !springing){
+			spring[index] = true;
+		} else if (hit.collider.gameObject.tag == "Ladder"){
+			ladder[index] = true;
+		} else if (hit.collider.gameObject.tag == "Key"){
+			
+		}
+	}
+
 	void OnGUI() {
 		GUI.Label (new Rect (Screen.width / 2 - horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), "GAME NAME");
 
 		GUI.DrawTexture(new Rect ((int) (spacingUnit/2), (spacingUnit/2)+(verticalUnit*2)*(1-(float)redEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)redEnergy/maxEnergy)),redTex);		
-
 		GUI.DrawTexture(new Rect ((int) (spacingUnit)+horizontalUnit/2, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)greenEnergy/maxEnergy), horizontalUnit/2,(verticalUnit*2)*((float)greenEnergy/maxEnergy)),greenTex);		
 		GUI.DrawTexture(new Rect ((int) (spacingUnit*3/2)+horizontalUnit, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)blueEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)blueEnergy/maxEnergy)),blueTex);		
 
