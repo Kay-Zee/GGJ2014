@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerControl : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 	[HideInInspector]
 	public bool facingRight = true;			// For determining which way the player is currently facing.
 	[HideInInspector]
 	public bool jump = false;				// Condition for whether the player should jump.
-
+	[HideInInspector]
+	public bool spring = false;				// Condition for whether the player should spring.
+	private bool springing = false;
+	private bool ladder = false;
 	
 	// Energy Controls
 	[HideInInspector]
@@ -17,29 +20,46 @@ public class PlayerControl : MonoBehaviour
 	[HideInInspector]
 	public bool blue = false;				// Is blue activated
 
-	private int activationEnergy = 10;
-	private int energyDrainRate = 1;
+	public Texture2D redTex;
+	public Texture2D greenTex; 
+	public Texture2D blueTex;
+
+
+	private float activationEnergy = 10f;
+	private float energyDrainRate = 0.1f;
+	private float maxEnergy = 100f;
 	[HideInInspector]
-	public int greenEnergy = 0;				// Amount of green energy
+	public float greenEnergy = 50f;				// Amount of green energy
 	[HideInInspector]
-	public int redEnergy = 0;				// Amount of red energy
+	public float redEnergy = 50f;				// Amount of red energy
 	[HideInInspector]
-	public int blueEnergy = 0;				// Amount of blue energy
+	public float blueEnergy = 50f;				// Amount of blue energy
 
 	public float moveForce = 365f;			// Amount of force added to move the player left and right.
 	public float maxSpeed = 5f;				// The fastest the player can travel in the x axis.
 	//public AudioClip[] jumpClips;			// Array of clips for when the player jumps.
-	public float jumpForce = 1000f;			// Amount of force added when the player jumps.
-
+	public float jumpForce = 300f;			// Amount of force added when the player jumps.
+	public float climbSpeed = 1f;			// Ladder Climbing Speed
 	private Transform groundCheck;			// A position marking where to check if the player is grounded.
+	private Transform ladderCheck;			// A position marking where to check if the player is at a ladder.
+
 	private bool grounded = false;			// Whether or not the player is grounded.
 	private Animator anim;					// Reference to the player's animator component.
 
 
+	// Standardized units, useful for making game compatible with multiple resolutions
+	private int horizontalUnit = Screen.width/16;
+	private int verticalUnit = Screen.height/9;
+	private int spacingUnit = Screen.width/32;
+
 	void Awake()
 	{
+		greenEnergy = 50;
+		redEnergy = 50;
+		blueEnergy = 50;
 		// Setting up references.
 		groundCheck = transform.Find("groundCheck");
+		ladderCheck = transform.Find("ladderCheck");
 		anim = GetComponent<Animator>();
 	}
 
@@ -48,6 +68,36 @@ public class PlayerControl : MonoBehaviour
 	{
 		// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
 		grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));  
+		if (green && Physics2D.Linecast (transform.position, ladderCheck.position, 1 << LayerMask.NameToLayer ("GreenLadder"))) {
+			rigidbody2D.gravityScale=0f;
+			ladder = true;
+		} else {
+			rigidbody2D.gravityScale=1f;
+			ladder = false;
+		}
+		if (!springing && blue)
+			spring = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("BlueTrampoline"));  
+
+		if(spring)
+		{
+			springing = true;
+			Invoke("allowSpring",0.1f);
+			// Set the Jump animator trigger parameter.
+			anim.SetTrigger("Jump");
+			
+			// Play a random jump audio clip.
+			//int i = Random.Range(0, jumpClips.Length);
+			//AudioSource.PlayClipAtPoint(jumpClips[i], transform.position);
+			
+			// Add a vertical force to the player.
+			rigidbody2D.AddForce(new Vector2(0f, jumpForce*2));
+			
+			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
+			spring = false;
+			
+		}
+
+
 
 		// If the jump button is pressed and the player is grounded then the player should jump.
 		if(Input.GetButtonDown("Jump") && grounded)
@@ -73,6 +123,10 @@ public class PlayerControl : MonoBehaviour
 				blue = false;
 			}
 		}
+		if (Input.GetButtonDown ("Reset")) {
+			Application.LoadLevel(Application.loadedLevel);
+		}
+
 	}
 
 
@@ -80,7 +134,17 @@ public class PlayerControl : MonoBehaviour
 	{
 		// Cache the horizontal input.
 		float h = Input.GetAxis("Horizontal");
+		float v = Input.GetAxis ("Vertical");
 
+		if (ladder){
+			if (v > 0) {
+				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 10  );
+			} else if (v < 0) {
+				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , -10  );
+			} else {
+				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 0  );
+			}
+		}
 		// The Speed animator parameter is set to the absolute value of the horizontal input.
 		anim.SetFloat("Speed", Mathf.Abs(h));
 
@@ -102,7 +166,9 @@ public class PlayerControl : MonoBehaviour
 		else if(h < 0 && facingRight)
 			// ... flip the player.
 			Flip();
-
+		if (h == 0) {
+			rigidbody2D.velocity = new Vector2( 0 , rigidbody2D.velocity.y  );
+		}
 		// If the player should jump...
 		if(jump)
 		{
@@ -144,6 +210,7 @@ public class PlayerControl : MonoBehaviour
 			blueEnergy -= energyDrainRate;
 
 
+
 	}
 	
 	
@@ -158,7 +225,20 @@ public class PlayerControl : MonoBehaviour
 		transform.localScale = theScale;
 	}
 
+	void allowSpring()
+	{
+		springing = false;
+	}
 
+	void OnGUI() {
+		GUI.Label (new Rect (Screen.width / 2 - horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), "GAME NAME");
+
+		GUI.DrawTexture(new Rect ((int) (spacingUnit/2), (spacingUnit/2)+(verticalUnit*2)*(1-(float)redEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)redEnergy/maxEnergy)),redTex);		
+
+		GUI.DrawTexture(new Rect ((int) (spacingUnit)+horizontalUnit/2, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)greenEnergy/maxEnergy), horizontalUnit/2,(verticalUnit*2)*((float)greenEnergy/maxEnergy)),greenTex);		
+		GUI.DrawTexture(new Rect ((int) (spacingUnit*3/2)+horizontalUnit, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)blueEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)blueEnergy/maxEnergy)),blueTex);		
+
+	}
 
 
 
