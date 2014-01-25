@@ -1,0 +1,175 @@
+fileFormatVersion: 2
+guid: f01baade531ea461b903c21fce58843f
+TextureImporter:
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 1024
+  textureSettings:
+    filterMode: -1
+    aniso: 1
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings:
+  - buildTarget: iPhone
+    maxTextureSize: 1024
+    textureFormat: -2
+    compressionQuality: 50
+  spriteSheet:
+    sprites:
+    - name: envi_bird_0
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 1811
+        width: 241
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_1
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 1813
+        width: 240
+        height: 208
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_2
+      rect:
+        serializedVersion: 2
+        x: 599
+        y: 1813
+        width: 240
+        height: 214
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_3
+      rect:
+        serializedVersion: 2
+        x: 877
+        y: 1815
+        width: 240
+        height: 188
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_4
+      rect:
+        serializedVersion: 2
+        x: 1147
+        y: 1817
+        width: 254
+        height: 186
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_5
+      rect:
+        serializedVersion: 2
+        x: 1432
+        y: 1785
+        width: 243
+        height: 220
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_6
+      rect:
+        serializedVersion: 2
+        x: 1715
+        y: 1777
+        width: 240
+        height: 228
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_7
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 1497
+        width: 240
+        height: 228
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_8
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 1504
+        width: 240
+        height: 221
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_9
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 1536
+        width: 250
+        height: 187
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_10
+      rect:
+        serializedVersion: 2
+        x: 875
+        y: 1535
+        width: 242
+        height: 186
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_11
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 1533
+        width: 243
+        height: 214
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_12
+      rect:
+        serializedVersion: 2
+        x: 1437
+        y: 1531
+        width: 238
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: envi_bird_13
+      rect:
+        serializedVersion: 2
+        x: 1715
+        y: 1531
+        width: 240
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+  spritePackingTag: 
+  userData: 
