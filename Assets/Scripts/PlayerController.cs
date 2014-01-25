@@ -3,6 +3,10 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
+	private bool gameStarted = false;
+	private bool System.DateTime.;
+
+
 	[HideInInspector]
 	public bool facingRight = true;			// For determining which way the player is currently facing.
 	[HideInInspector]
@@ -25,9 +29,9 @@ public class PlayerController : MonoBehaviour
 	public Texture2D greenTex; 
 	public Texture2D blueTex;
 
-	private Behaviour redLayer, greenLayer, blueLayer;
-
-
+	private int redLayer, greenLayer, blueLayer;
+	private GameObject[] redLayerObjects,greenLayerObjects,blueLayerObjects;
+	
 
 	private float activationEnergy = 10f;
 	private float energyDrainRate = 0.1f;
@@ -63,15 +67,17 @@ public class PlayerController : MonoBehaviour
 		redEnergy = 50;
 		blueEnergy = 50;
 
-		redLayer = (Behaviour)Camera.main.GetComponent ("Red");
-		greenLayer = (Behaviour)Camera.main.GetComponent ("Green");
-		blueLayer = (Behaviour)Camera.main.GetComponent ("Blue");
-		if (redLayer!=null)
-			redLayer.enabled = false;
-		if (greenLayer!=null)
-			greenLayer.enabled = false;
-		if (blueLayer!=null)
-			blueLayer.enabled = false;
+		redLayer = LayerMask.NameToLayer("Red");
+		greenLayer = LayerMask.NameToLayer ("Green");
+		blueLayer = LayerMask.NameToLayer ("Blue");
+		redLayerObjects = FindGameObjectsWithLayer (redLayer);
+		greenLayerObjects = FindGameObjectsWithLayer (greenLayer);
+		blueLayerObjects = FindGameObjectsWithLayer (blueLayer);
+		ActivateGameObjects(redLayerObjects, false);
+		ActivateGameObjects(greenLayerObjects, false);
+		ActivateGameObjects(blueLayerObjects, false);
+
+
 		// Setting up booleans
 		spring = new bool[3];	
 		Populate(spring, false);
@@ -146,34 +152,28 @@ public class PlayerController : MonoBehaviour
 		if (Input.GetButtonDown ("Green")) {
 			if (!green && greenEnergy-activationEnergy>0){
 				green = true;
-				if (greenLayer!=null)
-					greenLayer.enabled=true;
+				ActivateGameObjects(greenLayerObjects, true);
 			} else {
 				green = false;
-				if (greenLayer!=null)
-					greenLayer.enabled=false;
+				ActivateGameObjects(greenLayerObjects, false);
 			}
 		}
 		if (Input.GetButtonDown ("Red")) {
 			if (!red && redEnergy-activationEnergy>0){
 				red = true;
-				if (redLayer!=null)
-					redLayer.enabled=true;
+				ActivateGameObjects(redLayerObjects, true);
 			} else {
 				red = false;
-				if (redLayer!=null)
-					redLayer.enabled=false;
+				ActivateGameObjects(redLayerObjects, false);
 			}
 		}
 		if (Input.GetButtonDown ("Blue")) {
 			if (!blue && blueEnergy-activationEnergy>0){
 				blue = true;
-				if (blueLayer!=null)
-					blueLayer.enabled=true;
+				ActivateGameObjects(blueLayerObjects, true);
 			} else {
 				blue = false;
-				if (blueLayer!=null)
-					blueLayer.enabled=false;
+				ActivateGameObjects(blueLayerObjects, false);
 			}
 		}
 		if (Input.GetButtonDown ("Reset")) {
@@ -307,6 +307,20 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	GameObject[] FindGameObjectsWithLayer (int layer) {
+		GameObject[] goArray = FindObjectsOfType<GameObject>();
+		System.Collections.Generic.List<GameObject> goList = new System.Collections.Generic.List<GameObject>();
+		for (var i = 0; i < goArray.Length; i++) {
+			if (goArray[i].layer == layer) {
+				goList.Add(goArray[i]);
+			}
+		}
+		if (goList.Count == 0) {
+			return null;
+		}
+		return goList.ToArray();
+	}
+	
 	void OnGUI() {
 		GUI.Label (new Rect (Screen.width / 2 - horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), "GAME NAME");
 
@@ -316,7 +330,12 @@ public class PlayerController : MonoBehaviour
 
 	}
 
-
-
-
+	void ActivateGameObjects (GameObject[] Objects, bool activate){
+		if (Objects!=null)
+		for(int i = 0; i<Objects.Length; ++i){
+			Objects[i].active = activate;
+		}
+	}
+	
+	
 }
