@@ -316,6 +316,13 @@ public class PlayerController : MonoBehaviour
 
 	}
 
+	void fireDamage(float decrement) {
+		greenEnergy -= decrement;
+		redEnergy -= decrement;
+		blueEnergy -= decrement;
+	}
+
+
 
 
 
