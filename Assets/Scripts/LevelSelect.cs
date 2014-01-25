@@ -44,7 +44,7 @@ public class LevelSelect : MonoBehaviour {
 		levelSelect = GUI.SelectionGrid (rLevels, levelSelect, levels, 4, style);
 		if (GUI.Button(rSelect,"Select Level")) {
 			print ("Player selected " + levels[levelSelect]);
-			Application.LoadLevel("Level_" + levelSelect+1);
+			Application.LoadLevel("Level_0" + (levelSelect+1).ToString ());
 		}
 		
 	}
