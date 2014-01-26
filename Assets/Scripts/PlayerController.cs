@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
 	private bool gameStarted = false;
-	private bool System.DateTime.;
+	private bool System.TimeSpan;
 
 
 	[HideInInspector]
@@ -255,12 +255,27 @@ public class PlayerController : MonoBehaviour
 			             
 		}
 
-		if (green)
+		if (green){
 			greenEnergy -= energyDrainRate;
-		if (red)
+			if (greenEnergy < 0) {
+				greenEnergy=0;
+				green = false;
+			}
+		}
+		if (red) {
 			redEnergy -= energyDrainRate;
-		if (blue)
+			if (redEnergy < 0) {
+				redEnergy=0;
+				red = false;
+			}
+		}
+		if (blue){
 			blueEnergy -= energyDrainRate;
+			if (blueEnergy < 0) {
+				blueEnergy=0;
+				blue = false;
+			}
+		}
 
 
 
