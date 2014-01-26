@@ -411,6 +411,14 @@ public class PlayerController : MonoBehaviour
 		greenEnergy -= decrement;
 		redEnergy -= decrement;
 		blueEnergy -= decrement;
+
+		if (isAllEnergyDrained ()) {
+			gameEnded = true;
+		}
+
+	}
+	bool isAllEnergyDrained() {
+		return greenEnergy <= 0 && redEnergy <= 0 && blueEnergy <= 0;
 	}
 
 	void obtainsKey() {
