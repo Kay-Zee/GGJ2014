@@ -351,13 +351,19 @@ public class PlayerController : MonoBehaviour
 
 
 	}
+	
+	void fireDamage(float decrement) {
+		greenEnergy -= decrement;
+		redEnergy -= decrement;
+		blueEnergy -= decrement;
+	}
 
+
+	
 	void ActivateGameObjects (GameObject[] Objects, bool activate){
 		if (Objects!=null)
 		for(int i = 0; i<Objects.Length; ++i){
 			Objects[i].active = activate;
 		}
 	}
-	
-	
 }
