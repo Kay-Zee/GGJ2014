@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
 
 	void Awake()
 	{
-		gameTimeScale = Time.timeScale;
+		gameTimeScale = 1;
 		timeLeft = System.TimeSpan.FromSeconds (90);
 
 		greenEnergy = 50;
@@ -104,8 +104,10 @@ public class PlayerController : MonoBehaviour
 	{
 		if (!gameStarted) {
 			if(Input.GetButtonDown("Jump")){
-				gameStarted = true;
+				print (gameTimeScale);
 				Time.timeScale=gameTimeScale;
+				gameStarted = true;
+
 			}
 		} else {
 			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
