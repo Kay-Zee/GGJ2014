@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 	private bool gameStarted = false;
 	private System.TimeSpan timeLeft;
 
+	private bool hasKey = false;
 
 	[HideInInspector]
 	public bool facingRight = true;			// For determining which way the player is currently facing.
@@ -358,7 +359,9 @@ public class PlayerController : MonoBehaviour
 		blueEnergy -= decrement;
 	}
 
-
+	void obtainsKey() {
+		hasKey = true;
+	}
 	
 	void ActivateGameObjects (GameObject[] Objects, bool activate){
 		if (Objects!=null)
