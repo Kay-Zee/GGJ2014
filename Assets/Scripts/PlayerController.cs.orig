@@ -4,10 +4,12 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
 	private bool gameStarted = false;
-	private bool gameEnded = false;
+<<<<<<< HEAD
 	private System.TimeSpan timeLeft;
+=======
+	//private bool System.DateTime.;
+>>>>>>> d1aadd9e8489db11e8f4176ab6c23f212b3151a4
 
-	private bool hasKey = false;
 
 	[HideInInspector]
 	public bool facingRight = true;			// For determining which way the player is currently facing.
@@ -98,214 +100,189 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
 	{
-		if (!gameStarted) {
-			if(Input.GetButtonDown("Jump"))
-				gameStarted = true;
+		// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
+		grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));  
+		Populate (ladder, false);
+		RaycastHit2D hitBlue, hitGreen, hitRed;
+		if (red){
+			hit[0] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
+			hitRed = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
+			if (hit[0]) 
+				performAction(hitRed,0);
+		}
+		if (green){
+			hit[1] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Green"));  
+			hitGreen = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Green"));  
+			if (hit[1])
+				performAction (hitGreen,1);
+		}
+		if (blue){
+			hit[2] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Blue"));  
+			hitBlue = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Blue"));  
+			if (hit[2]) 
+				performAction (hitBlue, 2);
+		}
+
+
+		if(consolidateBoolArray(spring))
+		{
+			springing = true;
+			Invoke("allowSpring",0.1f);
+			// Set the Jump animator trigger parameter.
+			anim.SetTrigger("Jump");
+			
+			// Play a random jump audio clip.
+			//int i = Random.Range(0, jumpClips.Length);
+			//AudioSource.PlayClipAtPoint(jumpClips[i], transform.position);
+			
+			// Add a vertical force to the player.
+			rigidbody2D.AddForce(new Vector2(0f, jumpForce*2));
+			
+			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
+			Populate(spring,false);
+			
+		}
+
+
+		if (consolidateBoolArray(ladder)) {
+			rigidbody2D.gravityScale=0f;
+
 		} else {
-			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
-			grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));  
-			Populate (ladder, false);
-			RaycastHit2D hitBlue, hitGreen, hitRed;
-			if (red){
-				hit[0] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
-				hitRed = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
-				if (hit[0]) 
-					performAction(hitRed,0);
-			}
-			if (green){
-				hit[1] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Green"));  
-				hitGreen = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Green"));  
-				if (hit[1])
-					performAction (hitGreen,1);
-			}
-			if (blue){
-				hit[2] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Blue"));  
-				hitBlue = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Blue"));  
-				if (hit[2]) 
-					performAction (hitBlue, 2);
-			}
+			rigidbody2D.gravityScale=1f;
+		}
 
-
-			if(consolidateBoolArray(spring))
-			{
-				springing = true;
-				Invoke("allowSpring",0.1f);
-				// Set the Jump animator trigger parameter.
-				anim.SetTrigger("Jump");
-				
-				// Play a random jump audio clip.
-				//int i = Random.Range(0, jumpClips.Length);
-				//AudioSource.PlayClipAtPoint(jumpClips[i], transform.position);
-				
-				// Add a vertical force to the player.
-				rigidbody2D.AddForce(new Vector2(0f, jumpForce*2));
-				
-				// Make sure the player can't jump again until the jump conditions from Update are satisfied.
-				Populate(spring,false);
-				
-			}
-
-
-			if (consolidateBoolArray(ladder)) {
-				rigidbody2D.gravityScale=0f;
-
-			} else {
-				rigidbody2D.gravityScale=1f;
-			}
-
-			// If the jump button is pressed and the player is grounded then the player should jump.
-			if(Input.GetButtonDown("Jump") && grounded)
-				jump = true;
-			if (Input.GetButtonDown ("Green")) {
-				if (!green && greenEnergy-activationEnergy>0){
-					green = true;
-					ActivateGameObjects(greenLayerObjects, true);
-				} else {
-					green = false;
-					ActivateGameObjects(greenLayerObjects, false);
-				}
-			}
-			if (green) {
+		// If the jump button is pressed and the player is grounded then the player should jump.
+		if(Input.GetButtonDown("Jump") && grounded)
+			jump = true;
+		if (Input.GetButtonDown ("Green")) {
+			if (!green && greenEnergy-activationEnergy>0){
+				green = true;
 				ActivateGameObjects(greenLayerObjects, true);
 			} else {
+				green = false;
 				ActivateGameObjects(greenLayerObjects, false);
 			}
-			if (Input.GetButtonDown ("Red")) {
-				if (!red && redEnergy-activationEnergy>0){
-					red = true;
-
-				} else {
-					red = false;
-
-				}
-			}
-			if (red) {
+		}
+		if (Input.GetButtonDown ("Red")) {
+			if (!red && redEnergy-activationEnergy>0){
+				red = true;
 				ActivateGameObjects(redLayerObjects, true);
 			} else {
+				red = false;
 				ActivateGameObjects(redLayerObjects, false);
 			}
-			if (Input.GetButtonDown ("Blue")) {
-				if (!blue && blueEnergy-activationEnergy>0){
-					blue = true;
-					ActivateGameObjects(blueLayerObjects, true);
-				} else {
-					blue = false;
-					ActivateGameObjects(blueLayerObjects, false);
-				}
-			}
-			if (blue) {
+		}
+		if (Input.GetButtonDown ("Blue")) {
+			if (!blue && blueEnergy-activationEnergy>0){
+				blue = true;
 				ActivateGameObjects(blueLayerObjects, true);
 			} else {
+				blue = false;
 				ActivateGameObjects(blueLayerObjects, false);
 			}
-			if (Input.GetButtonDown ("Reset")) {
-				Application.LoadLevel(Application.loadedLevel);
-			}
 		}
+		if (Input.GetButtonDown ("Reset")) {
+			Application.LoadLevel(Application.loadedLevel);
+		}
+
 	}
 
 
 	void FixedUpdate ()
 	{
-		if (gameStarted && !gameEnded){
-			timeLeft = timeLeft.Subtract (System.TimeSpan.FromSeconds(Time.fixedDeltaTime));
-			if (timeLeft.TotalMilliseconds<0){
-				gameEnded = true;
-			}
-			// Cache the horizontal input.
-			float h = Input.GetAxis("Horizontal");
-			float v = Input.GetAxis ("Vertical");
+		timeLeft = timeLeft.Subtract (System.TimeSpan.FromSeconds(Time.fixedDeltaTime));
+		// Cache the horizontal input.
+		float h = Input.GetAxis("Horizontal");
+		float v = Input.GetAxis ("Vertical");
 
-			if (consolidateBoolArray(ladder)){
-				anim.SetBool("Climb",true);
-				if (v > 0) {
-					rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 5  );
-				} else if (v < 0) {
-					rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , -5  );
-				} else {
-					rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 0  );
-				}
+		if (consolidateBoolArray(ladder)){
+			if (v > 0) {
+				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 5  );
+			} else if (v < 0) {
+				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , -5  );
 			} else {
-				anim.SetBool("Climb",false);
-			}
-			// The Speed animator parameter is set to the absolute value of the horizontal input.
-			anim.SetFloat("Speed", Mathf.Abs(h));
-
-			// If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
-			if(h * rigidbody2D.velocity.x < maxSpeed)
-				// ... add a force to the player.
-				rigidbody2D.AddForce(Vector2.right * h * moveForce);
-
-			// If the player's horizontal velocity is greater than the maxSpeed...
-			if(Mathf.Abs(rigidbody2D.velocity.x) > maxSpeed)
-				// ... set the player's velocity to the maxSpeed in the x axis.
-				rigidbody2D.velocity = new Vector2(Mathf.Sign(rigidbody2D.velocity.x) * maxSpeed, rigidbody2D.velocity.y);
-
-			// If the input is moving the player right and the player is facing left...
-			if(h > 0 && !facingRight)
-				// ... flip the player.
-				Flip();
-			// Otherwise if the input is moving the player left and the player is facing right...
-			else if(h < 0 && facingRight)
-				// ... flip the player.
-				Flip();
-			if (h == 0) {
-				rigidbody2D.velocity = new Vector2( 0 , rigidbody2D.velocity.y  );
-			}
-			// If the player should jump...
-			if(jump)
-			{
-				// Set the Jump animator trigger parameter.
-				anim.SetTrigger("Jump");
-				// Play a random jump audio clip.
-				//int i = Random.Range(0, jumpClips.Length);
-				//AudioSource.PlayClipAtPoint(jumpClips[i], transform.position);
-
-				// Add a vertical force to the player.
-				rigidbody2D.AddForce(new Vector2(0f, jumpForce));
-
-				// Make sure the player can't jump again until the jump conditions from Update are satisfied.
-				jump = false;
-
-			} 
-
-			//if we are in the state jump and i am ground than go to idle
-
-			AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);			
-			
-			if (stateInfo.IsName("player_jump"))
-
-			{
-
-				if(grounded)
-				{
-					anim.SetTrigger("Touchground");
-				}
-				             
-			}
-
-			if (green){
-				greenEnergy -= energyDrainRate;
-				if (greenEnergy < 0) {
-					greenEnergy=0;
-					green = false;
-				}
-			}
-			if (red) {
-				redEnergy -= energyDrainRate;
-				if (redEnergy < 0) {
-					redEnergy=0;
-					red = false;
-				}
-			}
-			if (blue){
-				blueEnergy -= energyDrainRate;
-				if (blueEnergy < 0) {
-					blueEnergy=0;
-					blue = false;
-				}
+				rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 0  );
 			}
 		}
+		// The Speed animator parameter is set to the absolute value of the horizontal input.
+		anim.SetFloat("Speed", Mathf.Abs(h));
+
+		// If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
+		if(h * rigidbody2D.velocity.x < maxSpeed)
+			// ... add a force to the player.
+			rigidbody2D.AddForce(Vector2.right * h * moveForce);
+
+		// If the player's horizontal velocity is greater than the maxSpeed...
+		if(Mathf.Abs(rigidbody2D.velocity.x) > maxSpeed)
+			// ... set the player's velocity to the maxSpeed in the x axis.
+			rigidbody2D.velocity = new Vector2(Mathf.Sign(rigidbody2D.velocity.x) * maxSpeed, rigidbody2D.velocity.y);
+
+		// If the input is moving the player right and the player is facing left...
+		if(h > 0 && !facingRight)
+			// ... flip the player.
+			Flip();
+		// Otherwise if the input is moving the player left and the player is facing right...
+		else if(h < 0 && facingRight)
+			// ... flip the player.
+			Flip();
+		if (h == 0) {
+			rigidbody2D.velocity = new Vector2( 0 , rigidbody2D.velocity.y  );
+		}
+		// If the player should jump...
+		if(jump)
+		{
+			// Set the Jump animator trigger parameter.
+			anim.SetTrigger("Jump");
+
+			// Play a random jump audio clip.
+			//int i = Random.Range(0, jumpClips.Length);
+			//AudioSource.PlayClipAtPoint(jumpClips[i], transform.position);
+
+			// Add a vertical force to the player.
+			rigidbody2D.AddForce(new Vector2(0f, jumpForce));
+
+			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
+			jump = false;
+
+		}
+
+		//if we are in the state jump and i am ground than go to idle
+
+		AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);			
+		
+		if (stateInfo.IsName("Base Layer.jump"))
+
+		{
+
+			if(grounded)
+			{
+				anim.SetTrigger("Touchground");
+			}
+			             
+		}
+
+		if (green){
+			greenEnergy -= energyDrainRate;
+			if (greenEnergy < 0) {
+				greenEnergy=0;
+				green = false;
+			}
+		}
+		if (red) {
+			redEnergy -= energyDrainRate;
+			if (redEnergy < 0) {
+				redEnergy=0;
+				red = false;
+			}
+		}
+		if (blue){
+			blueEnergy -= energyDrainRate;
+			if (blueEnergy < 0) {
+				blueEnergy=0;
+				blue = false;
+			}
+		}
+
 
 
 	}
@@ -366,10 +343,9 @@ public class PlayerController : MonoBehaviour
 	}
 	
 	void OnGUI() {
-		if (!gameStarted)
-			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit, spacingUnit, horizontalUnit * 4, spacingUnit), "Press Space to Start");
+		GUI.Label (new Rect (Screen.width / 2 - horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), "GAME NAME");
 
-		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), string.Format("{0}:{1}:{2}",
+		GUI.Label (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), string.Format("{0}:{1}:{2}",
 		                                                                                                                     timeLeft.Minutes,
 		                                                                                                                     timeLeft.Seconds,timeLeft.Milliseconds));
 
@@ -386,9 +362,7 @@ public class PlayerController : MonoBehaviour
 		blueEnergy -= decrement;
 	}
 
-	void obtainsKey() {
-		hasKey = true;
-	}
+
 	
 	void ActivateGameObjects (GameObject[] Objects, bool activate){
 		if (Objects!=null)
