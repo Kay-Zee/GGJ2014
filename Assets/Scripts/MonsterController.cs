@@ -15,7 +15,20 @@ public class MonsterController : MonoBehaviour {
 	void Update () {
 	
 	}
-
+	void OnTriggerEnter2D(Collider2D col){
+		if(col.gameObject.tag == "Player"){
+			col.gameObject.SendMessage("touchedMonster", "red");
+			if (((PlayerController) col.gameObject.GetComponent("PlayerController")).red){
+				Destroy (this.gameObject);
+			}
+		}
+	}
+	
+	void OnTriggerStay2D(Collider2D col){
+		if(col.gameObject.tag == "Player"){			
+			col.gameObject.SendMessage("fireDamage", 0.2f);	
+		}
+	}
 	void Flip ()
 	{
 		// Switch the way the player is labelled as facing.
