@@ -11,6 +11,10 @@ public class CameraFollow : MonoBehaviour
 	public Vector2 minXAndY;		// The minimum x and y coordinates the camera can have.
 
 
+	public float dampTime = 0.15f;
+	private Vector3 velocity = Vector3.zero;
+	public Transform target;
+	
 	private Transform player;		// Reference to the player's transform.
 
 
@@ -37,7 +41,8 @@ public class CameraFollow : MonoBehaviour
 
 	void Update ()
 	{
-		TrackPlayer();
+		//TrackPlayer();
+		TrackPlayer2 ();
 	}
 	
 	
@@ -63,5 +68,15 @@ public class CameraFollow : MonoBehaviour
 
 		// Set the camera's position to the target position with the same z component.
 		transform.position = new Vector3(targetX, targetY, transform.position.z);
+	}
+	void TrackPlayer2 ()
+	{
+		if (target)
+		{
+			Vector3 point = camera.WorldToViewportPoint(target.position);
+			Vector3 delta = target.position - camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z)); //(new Vector3(0.5, 0.5, point.z));
+			Vector3 destination = transform.position + delta;
+			transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);
+		}
 	}
 }
