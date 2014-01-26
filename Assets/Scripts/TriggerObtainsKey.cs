@@ -16,8 +16,13 @@ public class TriggerObtainsKey : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D col){
 		if (col.gameObject.tag == "Player") {
 			col.gameObject.SendMessage ("obtainsKey");
+
+			//player will now emit a burst
+			col.gameObject.particleSystem.Emit(50);
+
 			Destroy (this.gameObject);
 		}
+
 	}
 
 			

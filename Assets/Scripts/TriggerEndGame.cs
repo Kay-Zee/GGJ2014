@@ -12,4 +12,11 @@ public class TriggerEndGame : MonoBehaviour {
 	void Update () {
 	
 	}
+
+	void OnTriggerEnter2D(Collider2D col){
+		if(col.gameObject.tag == "Player"){
+			col.gameObject.SendMessage("touchedDoor");
+		}
+	}
+
 }
