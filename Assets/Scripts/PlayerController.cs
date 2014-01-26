@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
 	private bool gameStarted = false;
 	private bool gameEnded = false;
+	private float gameTimeScale;
 	private System.TimeSpan timeLeft;
 
 	private bool hasKey = false;
@@ -31,8 +32,8 @@ public class PlayerController : MonoBehaviour
 	public Texture2D greenTex; 
 	public Texture2D blueTex;
 
-	private int redLayer, greenLayer, blueLayer;
-	private GameObject[] redLayerObjects,greenLayerObjects,blueLayerObjects;
+	private int redLayer, greenLayer, blueLayer, grayLayer;
+	private GameObject[] redLayerObjects,greenLayerObjects,blueLayerObjects,grayLayerObjects;
 	
 
 	private float activationEnergy = 10f;
@@ -64,6 +65,7 @@ public class PlayerController : MonoBehaviour
 
 	void Awake()
 	{
+		gameTimeScale = Time.timeScale;
 		timeLeft = System.TimeSpan.FromSeconds (90);
 
 		greenEnergy = 50;
@@ -73,9 +75,11 @@ public class PlayerController : MonoBehaviour
 		redLayer = LayerMask.NameToLayer("Red");
 		greenLayer = LayerMask.NameToLayer ("Green");
 		blueLayer = LayerMask.NameToLayer ("Blue");
+		grayLayer = LayerMask.NameToLayer ("Gray");
 		redLayerObjects = FindGameObjectsWithLayer (redLayer);
 		greenLayerObjects = FindGameObjectsWithLayer (greenLayer);
 		blueLayerObjects = FindGameObjectsWithLayer (blueLayer);
+		grayLayerObjects = FindGameObjectsWithLayer (grayLayer);
 		ActivateGameObjects(redLayerObjects, false);
 		ActivateGameObjects(greenLayerObjects, false);
 		ActivateGameObjects(blueLayerObjects, false);
@@ -99,8 +103,10 @@ public class PlayerController : MonoBehaviour
 	void Update()
 	{
 		if (!gameStarted) {
-			if(Input.GetButtonDown("Jump"))
+			if(Input.GetButtonDown("Jump")){
 				gameStarted = true;
+				Time.timeScale=gameTimeScale;
+			}
 		} else {
 			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
 			grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));  
@@ -198,6 +204,14 @@ public class PlayerController : MonoBehaviour
 			} else {
 				ActivateGameObjects(blueLayerObjects, false);
 			}
+
+			if (blue || red || green){
+				ActivateGameObjects(grayLayerObjects, false);
+
+			} else {
+				ActivateGameObjects(grayLayerObjects, true);
+			}
+
 			if (Input.GetButtonDown ("Reset")) {
 				Application.LoadLevel(Application.loadedLevel);
 			}
@@ -306,7 +320,8 @@ public class PlayerController : MonoBehaviour
 				}
 			}
 		}
-
+		if (gameEnded)
+			Time.timeScale = 0;
 
 	}
 	
@@ -370,6 +385,8 @@ public class PlayerController : MonoBehaviour
 		GUI.skin.box.alignment = TextAnchor.MiddleCenter;
 		if (!gameStarted)
 			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit*3, spacingUnit, horizontalUnit * 6, verticalUnit), "Press Space to Start");
+		else if (gameEnded)
+			GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart");
 
 		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
 		                                                                                                                     timeLeft.Minutes,
@@ -391,11 +408,25 @@ public class PlayerController : MonoBehaviour
 	void obtainsKey() {
 		hasKey = true;
 	}
+
+	void touchedMonster(string color){
+		if ((color.Equals ("red") && red)) {
+			redEnergy += 50;
+		} else if (color.Equals ("blue") && blue) {
+			blueEnergy += 50;
+		} else if (color.Equals ("green") && green) {
+			greenEnergy += 50;
+		} else {
+			gameEnded = true;
+		}
+			
+	}
 	
 	void ActivateGameObjects (GameObject[] Objects, bool activate){
 		if (Objects!=null)
 		for(int i = 0; i<Objects.Length; ++i){
-			Objects[i].active = activate;
+			if (Objects[i]!=null)
+				Objects[i].active = activate;
 		}
 	}
 }
