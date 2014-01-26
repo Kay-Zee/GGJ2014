@@ -18,7 +18,6 @@ public class TriggerPlatform : MonoBehaviour {
 		Transform platform = transform.parent;
 
 		if(col.gameObject.tag == "Player"){
-			print ("in player "+col.gameObject.layer+" "+ platform.gameObject.layer);
 			Physics2D.IgnoreLayerCollision(col.gameObject.layer, platform.gameObject.layer, true);
 
 		}
@@ -27,7 +26,6 @@ public class TriggerPlatform : MonoBehaviour {
 	void OnTriggerExit2D(Collider2D col){
 		Transform platform = transform.parent;
 		if(col.gameObject.tag == "Player"){
-			print ("exit player");
 			Physics2D.IgnoreLayerCollision(col.gameObject.layer, platform.gameObject.layer, false);
 		}
 	}
