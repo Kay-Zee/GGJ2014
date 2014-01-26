@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
 	private bool gameStarted = false;
-	private bool System.TimeSpan;
+	private System.TimeSpan timeLeft;
 
 
 	[HideInInspector]
@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour
 
 	void Awake()
 	{
+		timeLeft = System.TimeSpan.FromSeconds (90);
 
 		greenEnergy = 50;
 		redEnergy = 50;
@@ -185,6 +186,7 @@ public class PlayerController : MonoBehaviour
 
 	void FixedUpdate ()
 	{
+		timeLeft = timeLeft.Subtract (System.TimeSpan.FromSeconds(Time.fixedDeltaTime));
 		// Cache the horizontal input.
 		float h = Input.GetAxis("Horizontal");
 		float v = Input.GetAxis ("Vertical");
@@ -339,9 +341,14 @@ public class PlayerController : MonoBehaviour
 	void OnGUI() {
 		GUI.Label (new Rect (Screen.width / 2 - horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), "GAME NAME");
 
+		GUI.Label (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), string.Format("{0}:{1}:{2}",
+		                                                                                                                     timeLeft.Minutes,
+		                                                                                                                     timeLeft.Seconds,timeLeft.Milliseconds));
+
 		GUI.DrawTexture(new Rect ((int) (spacingUnit/2), (spacingUnit/2)+(verticalUnit*2)*(1-(float)redEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)redEnergy/maxEnergy)),redTex);		
 		GUI.DrawTexture(new Rect ((int) (spacingUnit)+horizontalUnit/2, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)greenEnergy/maxEnergy), horizontalUnit/2,(verticalUnit*2)*((float)greenEnergy/maxEnergy)),greenTex);		
 		GUI.DrawTexture(new Rect ((int) (spacingUnit*3/2)+horizontalUnit, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)blueEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)blueEnergy/maxEnergy)),blueTex);		
+
 
 	}
 
