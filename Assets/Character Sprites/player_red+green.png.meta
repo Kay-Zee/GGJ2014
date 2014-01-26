@@ -24,13 +24,13 @@ TextureImporter:
   maxTextureSize: 1024
   textureSettings:
     filterMode: -1
-    aniso: -1
+    aniso: 1
     mipBias: -1
-    wrapMode: -1
+    wrapMode: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -44,6 +44,186 @@ TextureImporter:
     textureFormat: -2
     compressionQuality: 50
   spriteSheet:
-    sprites: []
+    sprites:
+    - name: player_red+green_0
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 792
+        width: 117
+        height: 196
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 792
+        width: 120
+        height: 192
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_2
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 791
+        width: 117
+        height: 195
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_3
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 791
+        width: 117
+        height: 202
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_4
+      rect:
+        serializedVersion: 2
+        x: 872
+        y: 791
+        width: 108
+        height: 202
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_5
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 588
+        width: 105
+        height: 201
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_6
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 588
+        width: 110
+        height: 201
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_7
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 588
+        width: 116
+        height: 204
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_8
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 588
+        width: 117
+        height: 204
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_9
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 366
+        width: 117
+        height: 195
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_10
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 364
+        width: 120
+        height: 192
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_11
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 365
+        width: 117
+        height: 195
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_12
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 365
+        width: 117
+        height: 202
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_13
+      rect:
+        serializedVersion: 2
+        x: 873
+        y: 364
+        width: 107
+        height: 204
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_14
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 160
+        width: 108
+        height: 203
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_15
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 160
+        width: 110
+        height: 201
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_16
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 160
+        width: 116
+        height: 204
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_17
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 160
+        width: 116
+        height: 204
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_18
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 164
+        width: 129
+        height: 197
+      alignment: 0
+      pivot: {x: .5, y: .5}
+    - name: player_red+green_19
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 590
+        width: 129
+        height: 198
+      alignment: 0
+      pivot: {x: .5, y: .5}
   spritePackingTag: 
   userData: 

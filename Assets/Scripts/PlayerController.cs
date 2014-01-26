@@ -98,6 +98,9 @@ public class PlayerController : MonoBehaviour
 		groundCheck = transform.Find("groundCheck");
 		ladderCheck = transform.Find("ladderCheck");
 		anim = GetComponent<Animator>();
+		
+		Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer ("Ground"), true);
+
 	}
 
 
@@ -175,8 +178,10 @@ public class PlayerController : MonoBehaviour
 				}
 			}
 			if (green) {
+				anim.SetBool("Green",true);
 				ActivateGameObjects(greenLayerObjects, true);
 			} else {
+				anim.SetBool("Green",false);
 				ActivateGameObjects(greenLayerObjects, false);
 			}
 			if (Input.GetButtonDown ("Red")) {
@@ -189,8 +194,10 @@ public class PlayerController : MonoBehaviour
 				}
 			}
 			if (red) {
+				anim.SetBool("Red",true);
 				ActivateGameObjects(redLayerObjects, true);
 			} else {
+				anim.SetBool("Red",false);
 				ActivateGameObjects(redLayerObjects, false);
 			}
 			if (Input.GetButtonDown ("Blue")) {
@@ -203,15 +210,19 @@ public class PlayerController : MonoBehaviour
 				}
 			}
 			if (blue) {
+				anim.SetBool("Blue",true);
 				ActivateGameObjects(blueLayerObjects, true);
 			} else {
+				anim.SetBool("Blue",false);
 				ActivateGameObjects(blueLayerObjects, false);
 			}
 
 			if (blue || red || green){
+				anim.SetBool("Gray",false);
 				ActivateGameObjects(grayLayerObjects, false);
 
 			} else {
+				anim.SetBool("Gray",true);
 				ActivateGameObjects(grayLayerObjects, true);
 			}
 
@@ -290,12 +301,16 @@ public class PlayerController : MonoBehaviour
 
 			AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);			
 			
-			if (stateInfo.IsName("player_jump"))
+			if (stateInfo.IsName("player_green_jump")||
+			    stateInfo.IsName("player_gray_jump")||
+			    stateInfo.IsName("player_blue_jump")||
+			    stateInfo.IsName("player_red_jump"))
 
 			{
 
 				if(grounded)
 				{
+					print ("touching ground");
 					anim.SetTrigger("Touchground");
 				}
 				             
