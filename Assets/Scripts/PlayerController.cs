@@ -366,10 +366,12 @@ public class PlayerController : MonoBehaviour
 	}
 	
 	void OnGUI() {
+		GUI.skin.box.fontSize = spacingUnit;
+		GUI.skin.box.alignment = TextAnchor.MiddleCenter;
 		if (!gameStarted)
-			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit, spacingUnit, horizontalUnit * 4, spacingUnit), "Press Space to Start");
+			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit*3, spacingUnit, horizontalUnit * 6, verticalUnit), "Press Space to Start");
 
-		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit), string.Format("{0}:{1}:{2}",
+		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
 		                                                                                                                     timeLeft.Minutes,
 		                                                                                                                     timeLeft.Seconds,timeLeft.Milliseconds));
 
