@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
 	private bool gameStarted = false;
 	private bool gameEnded = false;
+	private bool winLevel = false;
 	private float gameTimeScale;
 	private System.TimeSpan timeLeft;
 
@@ -387,9 +388,14 @@ public class PlayerController : MonoBehaviour
 		GUI.skin.box.alignment = TextAnchor.MiddleCenter;
 		if (!gameStarted)
 			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit*3, spacingUnit, horizontalUnit * 6, verticalUnit), "Press Space to Start");
-		else if (gameEnded)
-			GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart");
+		else if (gameEnded){
+			if (winLevel){
+				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "You Win! \nPress Q to Restart");
 
+			} else {
+			GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart");
+			}
+		}
 		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
 		                                                                                                                     timeLeft.Minutes,
 		                                                                                                                     timeLeft.Seconds,timeLeft.Milliseconds));
@@ -411,6 +417,14 @@ public class PlayerController : MonoBehaviour
 		hasKey = true;
 	}
 
+	void touchedDoor() {
+		if (hasKey) {
+				gameEnded = true;
+			winLevel = true;
+		}
+
+	}
+	
 	void touchedMonster(string color){
 		if ((color.Equals ("red") && red)) {
 			redEnergy += 50;
