@@ -8,18 +8,20 @@ public class LevelSelect : MonoBehaviour {
 	private int verticalUnit = Screen.height/9;
 	private int spacingUnit = Screen.width/32;
 
-	private int totalLevels = 12;
+	private int totalLevels = 3;
 	private int dimension = 0;
 	private string[] levels;
 	private Rect rLevels, rTitle, rSelect;
-	public Texture[] images; 
 	public GUIStyle style;
 
 	// Level Selecting int
 	private int levelSelect = 0;
 
 	// Game Name
-	private string gameName = "My Game";
+	private string gameName = "Tinted";
+
+	// Show Levels
+	private bool show = false;
 
 	// Use this for initialization
 	void Start () {
@@ -28,10 +30,15 @@ public class LevelSelect : MonoBehaviour {
 			levels[i] = (i+1).ToString();
 		}
 
-		dimension = Screen.height - spacingUnit * 5 - verticalUnit;
-		rLevels = new Rect (spacingUnit*15, spacingUnit*3, dimension * 4/3, dimension);
-		rTitle = new Rect (Screen.width / 2 - horizontalUnit, spacingUnit, horizontalUnit * 2, spacingUnit);
-		rSelect = new Rect (Screen.width / 2 - horizontalUnit*2, Screen.height-spacingUnit-verticalUnit, horizontalUnit * 4, verticalUnit);
+		Invoke("Wait", 5);
+
+		dimension = Screen.height - spacingUnit * 4 - verticalUnit;
+		rLevels = new Rect (spacingUnit*10, spacingUnit*3, dimension, dimension/3);
+		rSelect = new Rect (Screen.width / 2 - horizontalUnit*2, Screen.height-spacingUnit*7-verticalUnit, horizontalUnit * 4, verticalUnit);
+	}
+
+	void Wait () {
+		show = true;
 	}
 	
 	// Update is called once per frame
@@ -40,12 +47,12 @@ public class LevelSelect : MonoBehaviour {
 	}
 
 	void OnGUI () {
-		GUI.Label (rTitle, gameName);
-		levelSelect = GUI.SelectionGrid (rLevels, levelSelect, levels, 4, style);
-		if (GUI.Button(rSelect,"Select Level")) {
-			print ("Player selected " + levels[levelSelect]);
-			Application.LoadLevel("Level_0" + (levelSelect+1).ToString ());
-		}
-		
+		if (show) {
+						levelSelect = GUI.SelectionGrid (rLevels, levelSelect, levels, 3, style);
+						if (GUI.Button (rSelect, "Select Level")) {
+								print ("Player selected " + levels [levelSelect]);
+								Application.LoadLevel ("Level_0" + (levelSelect + 1).ToString ());
+						}
+				}
 	}
 }
