@@ -28,6 +28,9 @@ public class PlayerController : MonoBehaviour
 	public bool red = false;				// Is red activated
 	[HideInInspector]
 	public bool blue = false;				// Is blue activated
+	[HideInInspector]
+	public bool[] activeColour;			// Is green activated
+
 
 	public Texture2D redTex;
 	public Texture2D greenTex; 
@@ -55,6 +58,7 @@ public class PlayerController : MonoBehaviour
 	private Transform groundCheck;			// A position marking where to check if the player is grounded.
 	private Transform ladderCheck;			// A position marking where to check if the player is at a ladder.
 
+	private bool hasParachute = false;
 	private bool grounded = false;			// Whether or not the player is grounded.
 	private Animator anim;					// Reference to the player's animator component.
 
@@ -68,6 +72,7 @@ public class PlayerController : MonoBehaviour
 	{
 		gameTimeScale = 1;
 		timeLeft = System.TimeSpan.FromSeconds (90);
+		rigidbody2D.gravityScale=1f;
 
 		greenEnergy = 50;
 		redEnergy = 50;
@@ -87,6 +92,8 @@ public class PlayerController : MonoBehaviour
 
 
 		// Setting up booleans
+		activeColour = new bool[3];
+		Populate(activeColour, false);
 		spring = new bool[3];	
 		Populate(spring, false);
 		springing = false;
@@ -161,7 +168,10 @@ public class PlayerController : MonoBehaviour
 			if (consolidateBoolArray(ladder)) {
 				rigidbody2D.gravityScale=0f;
 
-			} else {
+			} else if (hasParachute){
+				rigidbody2D.gravityScale=0.5f;
+			} else
+			{
 				rigidbody2D.gravityScale=1f;
 			}
 
@@ -170,11 +180,14 @@ public class PlayerController : MonoBehaviour
 				jump = true;
 			if (Input.GetButtonDown ("Green")) {
 				if (!green && greenEnergy-activationEnergy>0){
+					greenEnergy = greenEnergy-activationEnergy;
 					green = true;
-					ActivateGameObjects(greenLayerObjects, true);
+					red = false;
+					blue = false;
+					//ActivateGameObjects(greenLayerObjects, true);
 				} else {
 					green = false;
-					ActivateGameObjects(greenLayerObjects, false);
+					//ActivateGameObjects(greenLayerObjects, false);
 				}
 			}
 			if (green) {
@@ -186,8 +199,10 @@ public class PlayerController : MonoBehaviour
 			}
 			if (Input.GetButtonDown ("Red")) {
 				if (!red && redEnergy-activationEnergy>0){
+					redEnergy = redEnergy-activationEnergy;
 					red = true;
-
+					green = false;
+					blue = false;
 				} else {
 					red = false;
 
@@ -202,11 +217,14 @@ public class PlayerController : MonoBehaviour
 			}
 			if (Input.GetButtonDown ("Blue")) {
 				if (!blue && blueEnergy-activationEnergy>0){
+					blueEnergy = blueEnergy-activationEnergy;
 					blue = true;
-					ActivateGameObjects(blueLayerObjects, true);
+					red = false;
+					green = false;
+					//ActivateGameObjects(blueLayerObjects, true);
 				} else {
 					blue = false;
-					ActivateGameObjects(blueLayerObjects, false);
+					//ActivateGameObjects(blueLayerObjects, false);
 				}
 			}
 			if (blue) {
@@ -446,6 +464,11 @@ public class PlayerController : MonoBehaviour
 			winLevel = true;
 		}
 
+	}
+
+	void obtainsParachute(){
+		print ("set gravity to 0.5");
+		hasParachute = true;
 	}
 	
 	void touchedMonster(string color){

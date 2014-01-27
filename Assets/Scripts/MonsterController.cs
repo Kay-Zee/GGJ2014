@@ -5,10 +5,19 @@ public class MonsterController : MonoBehaviour {
 
 	[HideInInspector]
 	public bool facingRight = true;			// For determining which way the monster is currently facing.
-
+	[HideInInspector]
+	public string[] colours;
+	public int color = 0;
 	// Use this for initialization
 	void Start () {
 	
+	}
+
+	void Awake () {
+		colours = new string[3];
+		colours [0] = "red";
+		colours [1] = "green";
+		colours [2] = "blue";
 	}
 	
 	// Update is called once per frame
@@ -17,8 +26,8 @@ public class MonsterController : MonoBehaviour {
 	}
 	void OnTriggerEnter2D(Collider2D col){
 		if(col.gameObject.tag == "Player"){
-			col.gameObject.SendMessage("touchedMonster", "red");
-			if (((PlayerController) col.gameObject.GetComponent("PlayerController")).red){
+			col.gameObject.SendMessage("touchedMonster", colours[color]);
+			if (((PlayerController) col.gameObject.GetComponent("PlayerController")).activeColour[color]){
 				Destroy (this.gameObject);
 			}
 		}

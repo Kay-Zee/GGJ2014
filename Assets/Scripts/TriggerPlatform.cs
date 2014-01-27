@@ -15,8 +15,10 @@ public class TriggerPlatform : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D col){
 		print (col.gameObject.tag);
-		Transform platform = transform.parent;
-
+		Transform platform = this.transform.parent;
+		if (platform == null){
+			print ("platform is null");
+		}
 		if(col.gameObject.tag == "Player"){
 			Physics2D.IgnoreLayerCollision(col.gameObject.layer, platform.gameObject.layer, true);
 
