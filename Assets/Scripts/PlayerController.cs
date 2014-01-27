@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
 		ladderCheck = transform.Find("ladderCheck");
 		anim = GetComponent<Animator>();
 		
-		Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer ("Ground"), true);
+		Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer ("Ground"), false);
 
 	}
 
