@@ -15,9 +15,9 @@ public class MonsterController : MonoBehaviour {
 
 	void Awake () {
 		colours = new string[3];
-		colours [0] = "red";
-		colours [1] = "green";
-		colours [2] = "blue";
+		colours [0] = "Red";
+		colours [1] = "Green";
+		colours [2] = "Blue";
 	}
 	
 	// Update is called once per frame

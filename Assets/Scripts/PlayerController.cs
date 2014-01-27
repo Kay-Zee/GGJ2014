@@ -22,6 +22,9 @@ public class PlayerController : MonoBehaviour
 	private bool[] hit = {false, false, false};
 	
 	// Energy Controls
+	private int numColours = 3;
+	[HideInInspector]
+	public string[] colourStrings;
 	[HideInInspector]
 	public bool green = false;				// Is green activated
 	[HideInInspector]
@@ -32,24 +35,20 @@ public class PlayerController : MonoBehaviour
 	public bool[] activeColour;			// Is green activated
 
 
-	public Texture2D redTex;
-	public Texture2D greenTex; 
-	public Texture2D blueTex;
+	public Texture2D[] colourTex;
 
-	private int redLayer, greenLayer, blueLayer, grayLayer;
-	private GameObject[] redLayerObjects,greenLayerObjects,blueLayerObjects,grayLayerObjects;
+	private int[] colourLayers;
+	private GameObject[][] layerObjects;
 	
 
 	private float activationEnergy = 10f;
 	private float energyDrainRate = 0.1f;
+	private float energyGainFromEat = 25f;
 	private float maxEnergy = 100f;
 	[HideInInspector]
-	public float greenEnergy = 50f;				// Amount of green energy
-	[HideInInspector]
-	public float redEnergy = 50f;				// Amount of red energy
-	[HideInInspector]
-	public float blueEnergy = 50f;				// Amount of blue energy
+	public float[] colourEnergy;
 
+	private float horizVel = 0f;
 	public float moveForce = 365f;			// Amount of force added to move the player left and right.
 	public float maxSpeed = 5f;				// The fastest the player can travel in the x axis.
 	//public AudioClip[] jumpClips;			// Array of clips for when the player jumps.
@@ -73,11 +72,32 @@ public class PlayerController : MonoBehaviour
 		gameTimeScale = 1;
 		timeLeft = System.TimeSpan.FromSeconds (90);
 		rigidbody2D.gravityScale=1f;
+		colourStrings = new string[numColours+1];
+		colourStrings[0] = "Gray";
+		colourStrings[1] = "Red";
+		colourStrings[2] = "Green";
+		colourStrings[3] = "Blue";
 
-		greenEnergy = 50;
-		redEnergy = 50;
-		blueEnergy = 50;
+		// Initialize Energy levels
+		//colourTex=new Texture2D[numColours];
+		colourEnergy = new float[numColours];
+		for (int i = 0; i < colourEnergy.Length; ++i)
+			colourEnergy[i]=50;
 
+		for (int i = 0; i < colourEnergy.Length; ++i)
+			colourEnergy[i]=50;
+
+		// Initialize layer objects
+		colourLayers = new int[numColours+1];
+		layerObjects = new GameObject[numColours+1][];
+		for (int i = 0; i < colourLayers.Length; ++i){
+			colourLayers[i] = LayerMask.NameToLayer(colourStrings[i]);
+			layerObjects[i] = FindGameObjectsWithLayer (colourLayers[i]);
+			if (i>0)
+				ActivateGameObjects(layerObjects[i], false);
+		}
+
+		/*
 		redLayer = LayerMask.NameToLayer("Red");
 		greenLayer = LayerMask.NameToLayer ("Green");
 		blueLayer = LayerMask.NameToLayer ("Blue");
@@ -89,7 +109,7 @@ public class PlayerController : MonoBehaviour
 		ActivateGameObjects(redLayerObjects, false);
 		ActivateGameObjects(greenLayerObjects, false);
 		ActivateGameObjects(blueLayerObjects, false);
-
+		*/
 
 		// Setting up booleans
 		activeColour = new bool[3];
@@ -124,7 +144,17 @@ public class PlayerController : MonoBehaviour
 			// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
 			grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));  
 			Populate (ladder, false);
-			RaycastHit2D hitBlue, hitGreen, hitRed;
+			RaycastHit2D[] colourHit = new RaycastHit2D[numColours];
+			for (int i = 0; i < colourHit.Length; ++i){
+				if (activeColour[i]){
+					hit[i] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer(colourStrings[i+1]));  
+					colourHit[i] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer(colourStrings[i+1]));  
+					if (hit[i]) 
+						performAction(colourHit[i],i);
+				}
+			}
+
+			/* Refactored into a for loop
 			if (red){
 				hit[0] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
 				hitRed = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
@@ -143,6 +173,8 @@ public class PlayerController : MonoBehaviour
 				if (hit[2]) 
 					performAction (hitBlue, 2);
 			}
+
+			*/
 
 
 			if(consolidateBoolArray(spring))
@@ -165,9 +197,9 @@ public class PlayerController : MonoBehaviour
 			}
 
 
+			// Change Gravity according to current state of the game
 			if (consolidateBoolArray(ladder)) {
 				rigidbody2D.gravityScale=0f;
-
 			} else if (hasParachute){
 				rigidbody2D.gravityScale=0.5f;
 			} else
@@ -178,6 +210,31 @@ public class PlayerController : MonoBehaviour
 			// If the jump button is pressed and the player is grounded then the player should jump.
 			if(Input.GetButtonDown("Jump") && grounded)
 				jump = true;
+
+
+			for (int i = 0; i < activeColour.Length; ++i){
+				if (Input.GetButtonDown (colourStrings[i+1])) {
+					if (!activeColour[i] && colourEnergy[i]-activationEnergy>0){
+						colourEnergy[i] -= activationEnergy;
+						Populate(activeColour, false);
+						activeColour[i] = true;
+						//ActivateGameObjects(greenLayerObjects, true);
+					} else {
+						activeColour[i] = false;
+						//ActivateGameObjects(greenLayerObjects, false);
+					}
+				}
+				if (activeColour[i]) {
+					anim.SetBool(colourStrings[i+1],true);
+					ActivateGameObjects(layerObjects[i+1], true);
+				} else {
+					anim.SetBool(colourStrings[i+1],false);
+					ActivateGameObjects(layerObjects[i+1], false);
+				}
+			}
+
+
+			/* Refactored to for loop
 			if (Input.GetButtonDown ("Green")) {
 				if (!green && greenEnergy-activationEnergy>0){
 					greenEnergy = greenEnergy-activationEnergy;
@@ -234,16 +291,18 @@ public class PlayerController : MonoBehaviour
 				anim.SetBool("Blue",false);
 				ActivateGameObjects(blueLayerObjects, false);
 			}
-
-			if (blue || red || green){
-				anim.SetBool("Gray",false);
-				ActivateGameObjects(grayLayerObjects, false);
+			*/
+			if (consolidateBoolArray(activeColour)){
+				anim.SetBool(colourStrings[0],false);
+				ActivateGameObjects(layerObjects[0], false);
 
 			} else {
-				anim.SetBool("Gray",true);
-				ActivateGameObjects(grayLayerObjects, true);
+				anim.SetBool(colourStrings[0],true);
+				ActivateGameObjects(layerObjects[0], true);
 			}
 
+
+			
 			if (Input.GetButtonDown ("Reset")) {
 				Application.LoadLevel(Application.loadedLevel);
 			}
@@ -277,27 +336,38 @@ public class PlayerController : MonoBehaviour
 			// The Speed animator parameter is set to the absolute value of the horizontal input.
 			anim.SetFloat("Speed", Mathf.Abs(h));
 
-			// If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
-			if(h * rigidbody2D.velocity.x < maxSpeed)
-				// ... add a force to the player.
-				rigidbody2D.AddForce(Vector2.right * h * moveForce);
 
+			// If the input is moving the player right and the player is facing left...
+			if(h > 0.01f && !facingRight)
+				// ... flip the player.
+				Flip();
+			// Otherwise if the input is moving the player left and the player is facing right...
+			else if(h < -0.01f && facingRight)
+				// ... flip the player.
+				Flip();
+
+			// calculate adding the force ourselves: acceleration = Force/mass ... and clamp the velocity 
+			horizVel = Mathf.Clamp(horizVel + h*(moveForce/rigidbody2D.mass)*Time.deltaTime, -maxSpeed, maxSpeed);
+			
+			Vector3 vel = rigidbody2D.velocity;
+			if (h == 0) {
+				horizVel = 0;
+			}
+			vel.x = horizVel;
+
+
+
+			/*
 			// If the player's horizontal velocity is greater than the maxSpeed...
 			if(Mathf.Abs(rigidbody2D.velocity.x) > maxSpeed)
 				// ... set the player's velocity to the maxSpeed in the x axis.
 				rigidbody2D.velocity = new Vector2(Mathf.Sign(rigidbody2D.velocity.x) * maxSpeed, rigidbody2D.velocity.y);
+*/
 
-			// If the input is moving the player right and the player is facing left...
-			if(h > 0 && !facingRight)
-				// ... flip the player.
-				Flip();
-			// Otherwise if the input is moving the player left and the player is facing right...
-			else if(h < 0 && facingRight)
-				// ... flip the player.
-				Flip();
-			if (h == 0) {
-				rigidbody2D.velocity = new Vector2( 0 , rigidbody2D.velocity.y  );
-			}
+
+
+			rigidbody2D.velocity = vel;
+			print (rigidbody2D.velocity.x);
 			// If the player should jump...
 			if(jump)
 			{
@@ -334,6 +404,17 @@ public class PlayerController : MonoBehaviour
 				             
 			}
 
+			for (int i = 0; i < activeColour.Length; ++i){
+				if (activeColour[i]){
+					colourEnergy[i] -= energyDrainRate;
+					if (colourEnergy[i] < 0) {
+						colourEnergy[i]=0;
+						activeColour[i] = false;
+					}
+				}
+			}
+				
+			/* Refactored to for loop
 			if (green){
 				greenEnergy -= energyDrainRate;
 				if (greenEnergy < 0) {
@@ -355,10 +436,39 @@ public class PlayerController : MonoBehaviour
 					blue = false;
 				}
 			}
+			*/
 		}
 		if (gameEnded)
 			Time.timeScale = 0;
 
+	}
+
+	void OnGUI() {
+		GUI.skin.box.fontSize = spacingUnit;
+		GUI.skin.box.alignment = TextAnchor.MiddleCenter;
+		if (!gameStarted)
+			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit*3, spacingUnit, horizontalUnit * 6, verticalUnit), "Press Space to Start");
+		else if (gameEnded){
+			if (winLevel){
+				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "You Win! \nPress Q to Restart");
+				
+			} else {
+				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart");
+			}
+		}
+		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
+		                                                                                                                    timeLeft.Minutes,
+		                                                                                                                    timeLeft.Seconds,timeLeft.Milliseconds));
+
+		for (int i = 0; i< colourEnergy.Length; ++i){
+			GUI.DrawTexture(new Rect ((spacingUnit*(i+1)/2)+horizontalUnit*i/2, (spacingUnit/2)+(verticalUnit*2)*(1-(float)colourEnergy[i]/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)colourEnergy[i]/maxEnergy)),colourTex[i]);		
+		}
+		/* Refactored into for loop
+		GUI.DrawTexture(new Rect ((int) (spacingUnit/2), (spacingUnit/2)+(verticalUnit*2)*(1-(float)redEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)redEnergy/maxEnergy)),redTex);		
+		GUI.DrawTexture(new Rect ((int) (spacingUnit)+horizontalUnit/2, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)greenEnergy/maxEnergy), horizontalUnit/2,(verticalUnit*2)*((float)greenEnergy/maxEnergy)),greenTex);		
+		GUI.DrawTexture(new Rect ((int) (spacingUnit*3/2)+horizontalUnit, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)blueEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)blueEnergy/maxEnergy)),blueTex);		
+		*/
+		
 	}
 	
 	
@@ -373,10 +483,6 @@ public class PlayerController : MonoBehaviour
 		transform.localScale = theScale;
 	}
 
-	void allowSpring()
-	{
-		springing = false;
-	}
 
 	bool consolidateBoolArray(bool[] array){
 		bool returnBool = false;
@@ -416,42 +522,29 @@ public class PlayerController : MonoBehaviour
 		return goList.ToArray();
 	}
 	
-	void OnGUI() {
-		GUI.skin.box.fontSize = spacingUnit;
-		GUI.skin.box.alignment = TextAnchor.MiddleCenter;
-		if (!gameStarted)
-			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit*3, spacingUnit, horizontalUnit * 6, verticalUnit), "Press Space to Start");
-		else if (gameEnded){
-			if (winLevel){
-				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "You Win! \nPress Q to Restart");
-
-			} else {
-			GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart");
-			}
-		}
-		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
-		                                                                                                                     timeLeft.Minutes,
-		                                                                                                                     timeLeft.Seconds,timeLeft.Milliseconds));
-
-		GUI.DrawTexture(new Rect ((int) (spacingUnit/2), (spacingUnit/2)+(verticalUnit*2)*(1-(float)redEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)redEnergy/maxEnergy)),redTex);		
-		GUI.DrawTexture(new Rect ((int) (spacingUnit)+horizontalUnit/2, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)greenEnergy/maxEnergy), horizontalUnit/2,(verticalUnit*2)*((float)greenEnergy/maxEnergy)),greenTex);		
-		GUI.DrawTexture(new Rect ((int) (spacingUnit*3/2)+horizontalUnit, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)blueEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)blueEnergy/maxEnergy)),blueTex);		
-
-
-	}
+	/**
+	 * Enviromental effects
+	 **/
 	
 	void fireDamage(float decrement) {
-		greenEnergy -= decrement;
-		redEnergy -= decrement;
-		blueEnergy -= decrement;
-
+		for (int i = 0; i<colourEnergy.Length; ++i){
+			colourEnergy[i] -= decrement;
+			if (colourEnergy[i]<0){
+				colourEnergy[i] = 0;
+			}
+		}
+		
 		if (isAllEnergyDrained ()) {
 			gameEnded = true;
 		}
 
 	}
 	bool isAllEnergyDrained() {
-		return greenEnergy <= 0 && redEnergy <= 0 && blueEnergy <= 0;
+		bool isEmpty = true;
+		for (int i = 0; i<colourEnergy.Length; ++i){
+			isEmpty = isEmpty && (colourEnergy[i]<=0);
+		}
+		return isEmpty;
 	}
 
 	void obtainsKey() {
@@ -466,12 +559,30 @@ public class PlayerController : MonoBehaviour
 
 	}
 
+	void allowSpring()
+	{
+		springing = false;
+	}
+
 	void obtainsParachute(){
-		print ("set gravity to 0.5");
 		hasParachute = true;
 	}
 	
 	void touchedMonster(string color){
+		bool eatMonster = false;
+		for (int i = 0; i<activeColour.Length; ++i){
+			if (color.Equals(colourStrings[i+1]) && activeColour[i]){
+				colourEnergy[i] +=energyGainFromEat;
+				eatMonster = true;
+			}
+		}
+
+		if (!eatMonster){
+			gameEnded = true;
+		}
+		
+
+		/* Refactored into for loop
 		if ((color.Equals ("red") && red)) {
 			redEnergy += 50;
 		} else if (color.Equals ("blue") && blue) {
@@ -481,6 +592,7 @@ public class PlayerController : MonoBehaviour
 		} else {
 			gameEnded = true;
 		}
+		*/
 			
 	}
 	
@@ -488,7 +600,8 @@ public class PlayerController : MonoBehaviour
 		if (Objects!=null)
 		for(int i = 0; i<Objects.Length; ++i){
 			if (Objects[i]!=null)
-				Objects[i].active = activate;
+				//Objects[i].active = activate;
+				Objects[i].SetActive(activate);
 		}
 	}
 }
