@@ -450,8 +450,8 @@ public class PlayerController : MonoBehaviour
 			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit*3, spacingUnit, horizontalUnit * 6, verticalUnit), "Press Space to Start");
 		else if (gameEnded){
 			if (winLevel){
-				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "You Win! \nPress Q to Restart");
-				
+				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "You Win! \nPress Q to Restart \nPress N to go to next level");
+
 			} else {
 				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart");
 			}
