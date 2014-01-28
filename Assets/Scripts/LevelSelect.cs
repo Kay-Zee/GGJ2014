@@ -21,7 +21,7 @@ public class LevelSelect : MonoBehaviour {
 	private string gameName = "Tinted";
 
 	// Show Levels
-	private bool show = false;
+	private bool showLevels = false;
 
 	// Use this for initialization
 	void Start () {
@@ -32,13 +32,13 @@ public class LevelSelect : MonoBehaviour {
 
 		Invoke("Wait", 5);
 
-		dimension = Screen.height - spacingUnit * 4 - verticalUnit;
+		dimension = Screen.height - spacingUnit * 6 - verticalUnit;
 		rLevels = new Rect (spacingUnit*10, spacingUnit*3, dimension, dimension/3);
 		rSelect = new Rect (Screen.width / 2 - horizontalUnit*2, Screen.height-spacingUnit*7-verticalUnit, horizontalUnit * 4, verticalUnit);
 	}
 
 	void Wait () {
-		show = true;
+		showLevels = true;
 	}
 	
 	// Update is called once per frame
@@ -47,12 +47,12 @@ public class LevelSelect : MonoBehaviour {
 	}
 
 	void OnGUI () {
-		if (show) {
-						levelSelect = GUI.SelectionGrid (rLevels, levelSelect, levels, 3, style);
-						if (GUI.Button (rSelect, "Select Level")) {
-								print ("Player selected " + levels [levelSelect]);
-								Application.LoadLevel ("Level_0" + (levelSelect + 1).ToString ());
-						}
-				}
+		if (showLevels) {
+			levelSelect = GUI.SelectionGrid (rLevels, levelSelect, levels, 3, style);
+			if (GUI.Button (rSelect, "Select Level")) {
+				print ("Player selected " + levels [levelSelect]);
+				Application.LoadLevel ("Level_0" + (levelSelect + 1).ToString ());
+			}
+		}
 	}
 }
