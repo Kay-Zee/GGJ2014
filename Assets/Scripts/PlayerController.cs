@@ -301,10 +301,10 @@ public class PlayerController : MonoBehaviour
 				ActivateGameObjects(layerObjects[0], true);
 			}
 
-
-			
 			if (Input.GetButtonDown ("Reset")) {
 				Application.LoadLevel(Application.loadedLevel);
+			} else if (Input.GetButtonDown ("NextLevel")) {
+				Application.LoadLevel(Application.loadedLevel + 1);
 			}
 		}
 	}
