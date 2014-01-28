@@ -304,7 +304,9 @@ public class PlayerController : MonoBehaviour
 			if (Input.GetButtonDown ("Reset")) {
 				Application.LoadLevel(Application.loadedLevel);
 			} else if (Input.GetButtonDown ("NextLevel")) {
-				Application.LoadLevel(Application.loadedLevel + 1);
+				if (Application.loadedLevel < 3) {
+					Application.LoadLevel(Application.loadedLevel + 1);
+				}
 			}
 		}
 	}
