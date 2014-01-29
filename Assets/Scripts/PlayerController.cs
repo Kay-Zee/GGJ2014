@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
 	private bool hasParachute = false;
 	private bool grounded = false;			// Whether or not the player is grounded.
 	private Animator anim;					// Reference to the player's animator component.
-
+	private Animation animSplatter;
 
 	// Standardized units, useful for making game compatible with multiple resolutions
 	private int horizontalUnit = Screen.width/16;
@@ -125,7 +125,8 @@ public class PlayerController : MonoBehaviour
 		groundCheck = transform.Find("groundCheck");
 		ladderCheck = transform.Find("ladderCheck");
 		anim = GetComponent<Animator>();
-		
+
+		animSplatter = transform.FindChild("splatter_of_paint").GetComponent<Animation>();
 		Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer ("Ground"), false);
 
 	}
@@ -218,6 +219,8 @@ public class PlayerController : MonoBehaviour
 						colourEnergy[i] -= activationEnergy;
 						Populate(activeColour, false);
 						activeColour[i] = true;
+						print ("paint_splatter_"+colourStrings[i+1].ToLower());
+						animSplatter.Play("paint_splatter_"+colourStrings[i+1].ToLower());
 						//ActivateGameObjects(greenLayerObjects, true);
 					} else {
 						activeColour[i] = false;
@@ -369,7 +372,6 @@ public class PlayerController : MonoBehaviour
 
 
 			rigidbody2D.velocity = vel;
-			print (rigidbody2D.velocity.x);
 			// If the player should jump...
 			if(jump)
 			{
