@@ -26,12 +26,6 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector]
 	public string[] colourStrings;
 	[HideInInspector]
-	public bool green = false;				// Is green activated
-	[HideInInspector]
-	public bool red = false;				// Is red activated
-	[HideInInspector]
-	public bool blue = false;				// Is blue activated
-	[HideInInspector]
 	public bool[] activeColour;			// Is green activated
 
 
@@ -48,6 +42,8 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector]
 	public float[] colourEnergy;
 
+	public float horizontalTouch;
+	public float verticalTouch;
 	private float horizVel = 0f;
 	public float moveForce = 365f;			// Amount of force added to move the player left and right.
 	public float maxSpeed = 5f;				// The fastest the player can travel in the x axis.
@@ -322,6 +318,10 @@ public class PlayerController : MonoBehaviour
 			if (timeLeft.TotalMilliseconds<0){
 				gameEnded = true;
 			}
+
+			/*
+			 * The input for the pc 
+			 */
 			// Cache the horizontal input.
 			float h = Input.GetAxis("Horizontal");
 			float v = Input.GetAxis ("Vertical");
@@ -599,7 +599,26 @@ public class PlayerController : MonoBehaviour
 		*/
 			
 	}
+
 	
+	public void ActivateColour(string colour){
+		if (colour.Equals(colourStrings[0])){
+			Populate(activeColour, false);
+		} else {
+			for (int i = 1; i < colourStrings.Length; i++){
+				if (colour.Equals(colourStrings[i])){
+					activeColour[i-1] = true;
+				}
+			}
+		}
+	}
+
+	public void StartGame (){
+		if (!gameStarted){
+			gameStarted = true;
+		}
+	}
+
 	void ActivateGameObjects (GameObject[] Objects, bool activate){
 		if (Objects!=null)
 		for(int i = 0; i<Objects.Length; ++i){

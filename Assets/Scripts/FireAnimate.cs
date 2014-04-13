@@ -9,8 +9,8 @@ public class FireAnimate : MonoBehaviour {
 
 	public Texture[] pictureArray;
 	private Texture picture; 
-	private int delay = 0;
-	private int count = 0;
+	//private int delay = 0;
+	//private int count = 0;
 	// Use this for initialization
 	void Start () {
 	
