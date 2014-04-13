@@ -11,6 +11,8 @@ public class controls : MonoBehaviour {
 	public Texture2D texJoyBase;
 	public Texture2D texJoyStick;
 
+	private bool[] colourPressed = {false, false, false};
+
 	private int threshHold = Screen.width/20;
 	private float vertical;
 	private float horizontal;
@@ -50,7 +52,17 @@ public class controls : MonoBehaviour {
 			HandleTouch(Input.GetTouch(0));
 			HandleTouch(Input.GetTouch(1));
 		}
-
+		for (int i = 0; i < colourButtons.Length; ++i){
+			if (Input.GetButtonDown(player.colourStrings[i+1])){
+				player.ActivateColour(player.colourStrings[i+1]);
+				colourPressed[i] = true;
+			} else if (Input.GetButtonUp(player.colourStrings[i+1])){
+				colourPressed[i] = false;
+			}
+		}
+		if (colourPressed [0] || colourPressed [1] || colourPressed [2]) {
+				colouring = true;
+		}
 		if (!colouring) {
 			player.ActivateColour(player.colourStrings[0]);
 			
