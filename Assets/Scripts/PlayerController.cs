@@ -3,11 +3,14 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
+
+
 	private bool gameStarted = false;
 	private bool gameEnded = false;
 	private bool winLevel = false;
 	private float gameTimeScale;
 	private System.TimeSpan timeLeft;
+	private System.DateTime jumpAllowedAfter = System.DateTime.Now;
 
 	private bool hasKey = false;
 
@@ -27,6 +30,7 @@ public class PlayerController : MonoBehaviour
 	public string[] colourStrings;
 	[HideInInspector]
 	public bool[] activeColour;			// Is green activated
+	public bool[] activeColourLastFrame;			// Is green activated
 
 
 	public Texture2D[] colourTex;
@@ -109,7 +113,9 @@ public class PlayerController : MonoBehaviour
 
 		// Setting up booleans
 		activeColour = new bool[3];
+		activeColourLastFrame = new bool[3];
 		Populate(activeColour, false);
+		Populate(activeColourLastFrame, false);
 		spring = new bool[3];	
 		Populate(spring, false);
 		springing = false;
@@ -210,19 +216,14 @@ public class PlayerController : MonoBehaviour
 
 
 			for (int i = 0; i < activeColour.Length; ++i){
-				if (Input.GetButtonDown (colourStrings[i+1])) {
-					if (!activeColour[i] && colourEnergy[i]-activationEnergy>0){
-						colourEnergy[i] -= activationEnergy;
-						Populate(activeColour, false);
-						activeColour[i] = true;
-						print ("paint_splatter_"+colourStrings[i+1].ToLower());
-						animSplatter.Play("paint_splatter_"+colourStrings[i+1].ToLower());
-						//ActivateGameObjects(greenLayerObjects, true);
-					} else {
-						activeColour[i] = false;
-						//ActivateGameObjects(greenLayerObjects, false);
-					}
+				if ((activeColour[i] && !activeColourLastFrame[i])&& colourEnergy[i]-activationEnergy>0){
+					activeColourLastFrame[i] = activeColour[i];
+					colourEnergy[i] -= activationEnergy;
+					print ("paint_splatter_"+colourStrings[i+1].ToLower());
+					animSplatter.Play("paint_splatter_"+colourStrings[i+1].ToLower());
+					//ActivateGameObjects(greenLayerObjects, true);
 				}
+				
 				if (activeColour[i]) {
 					anim.SetBool(colourStrings[i+1],true);
 					ActivateGameObjects(layerObjects[i+1], true);
@@ -328,34 +329,40 @@ public class PlayerController : MonoBehaviour
 
 			if (consolidateBoolArray(ladder)){
 				anim.SetBool("Climb",true);
-				if (v > 0) {
+				if (v > 0 || verticalTouch > 0) {
+					jumpAllowedAfter = System.DateTime.Now.AddMilliseconds(1000);
+					print (jumpAllowedAfter);
 					rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 5  );
-				} else if (v < 0) {
+				} else if (v < 0 || verticalTouch < 0) {
 					rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , -5  );
 				} else {
 					rigidbody2D.velocity = new Vector2( rigidbody2D.velocity.x , 0  );
 				}
 			} else {
+				if ((v > 0 || verticalTouch > 0) && grounded && System.DateTime.Now.CompareTo(jumpAllowedAfter)>0) {
+
+					jump = true;
+				} 
 				anim.SetBool("Climb",false);
 			}
 			// The Speed animator parameter is set to the absolute value of the horizontal input.
-			anim.SetFloat("Speed", Mathf.Abs(h));
+			anim.SetFloat("Speed", Mathf.Max(Mathf.Abs(h), Mathf.Abs(horizontalTouch)));
 
 
 			// If the input is moving the player right and the player is facing left...
-			if(h > 0.01f && !facingRight)
+			if((h > 0.01f || horizontalTouch > 0.01f) && !facingRight)
 				// ... flip the player.
 				Flip();
 			// Otherwise if the input is moving the player left and the player is facing right...
-			else if(h < -0.01f && facingRight)
+			else if((h < -0.01f || horizontalTouch < -0.01f)&& facingRight)
 				// ... flip the player.
 				Flip();
 
 			// calculate adding the force ourselves: acceleration = Force/mass ... and clamp the velocity 
-			horizVel = Mathf.Clamp(horizVel + h*(moveForce/rigidbody2D.mass)*Time.deltaTime, -maxSpeed, maxSpeed);
+			horizVel = Mathf.Clamp(horizVel + (h+horizontalTouch)*(moveForce/rigidbody2D.mass)*Time.deltaTime, -maxSpeed, maxSpeed);
 			
 			Vector3 vel = rigidbody2D.velocity;
-			if (h == 0) {
+			if (h == 0 && horizontalTouch == 0) {
 				horizVel = 0;
 			}
 			vel.x = horizVel;
@@ -382,7 +389,11 @@ public class PlayerController : MonoBehaviour
 				//AudioSource.PlayClipAtPoint(jumpClips[i], transform.position);
 
 				// Add a vertical force to the player.
-				rigidbody2D.AddForce(new Vector2(0f, jumpForce));
+				if (System.DateTime.Now.CompareTo(jumpAllowedAfter)>0){
+					rigidbody2D.AddForce(new Vector2(0f, jumpForce));
+					jumpAllowedAfter = System.DateTime.Now.AddMilliseconds(50);
+
+				}
 
 				// Make sure the player can't jump again until the jump conditions from Update are satisfied.
 				jump = false;
@@ -604,9 +615,11 @@ public class PlayerController : MonoBehaviour
 	public void ActivateColour(string colour){
 		if (colour.Equals(colourStrings[0])){
 			Populate(activeColour, false);
+			Populate(activeColourLastFrame, false);
 		} else {
 			for (int i = 1; i < colourStrings.Length; i++){
-				if (colour.Equals(colourStrings[i])){
+				if (colour.Equals(colourStrings[i]) && colourEnergy[i-1]-activationEnergy>0){
+					Populate(activeColour, false);
 					activeColour[i-1] = true;
 				}
 			}
