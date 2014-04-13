@@ -13,6 +13,8 @@ public class controls : MonoBehaviour {
 	public Texture2D texJoyBase;
 	public Texture2D texJoyStick;
 
+	public Texture2D[] texColours;
+
 	private bool[] colourPressed = {false, false, false};
 
 	private int threshHold = Screen.width/20;
@@ -40,8 +42,11 @@ public class controls : MonoBehaviour {
 			colourButtons[i] = 	new Rect(Screen.width - Screen.height/3, Screen.height * i / 3, Screen.height/3, Screen.height/3);
 		}
 		movementContainer = new Rect(0,0,Screen.width/2, Screen.height);
-		joyBaseContainer = new Rect(0,0,verticalUnit*4, verticalUnit*4);
-		joyStickContainer = new Rect(0,0,joyBaseContainer.width/2, joyBaseContainer.height/2);
+		joyStickStyle = new GUIStyle ();
+		joyStickStyle.stretchWidth = true;
+		joyStickStyle.stretchHeight = true;
+		joyBaseContainer = new Rect(0,0,verticalUnit*3, verticalUnit*3);
+		joyStickContainer = new Rect(0,0,joyBaseContainer.width*2/3, joyBaseContainer.height*2/3);
 	}
 	
 	// Update is called once per frame
@@ -178,8 +183,15 @@ public class controls : MonoBehaviour {
 			else if (joyStickContainer.y+joyStickContainer.height/2>joyBaseContainer.y+joyBaseContainer.height)
 				joyStickContainer.y = joyBaseContainer.y + joyBaseContainer.height-joyStickContainer.height/2;
 
-			GUI.Label(joyBaseContainer, texJoyBase);
-			GUI.Label(joyStickContainer, texJoyStick);
+			GUI.DrawTexture(joyBaseContainer, texJoyBase);
+			GUI.DrawTexture(joyStickContainer, texJoyStick);
 		}
+
+		// Display colours
+		GUI.DrawTexture (colourButtons [0], texColours [0]);
+		GUI.DrawTexture (colourButtons [1], texColours [1]);
+		GUI.DrawTexture (colourButtons [2], texColours [2]);
+
+
 	}
 }

@@ -306,10 +306,6 @@ public class PlayerController : MonoBehaviour
 
 			if (Input.GetButtonDown ("Reset")) {
 				Application.LoadLevel(Application.loadedLevel);
-			} else if (Input.GetButtonDown ("NextLevel")) {
-				if (Application.loadedLevel < 3) {
-					Application.LoadLevel(Application.loadedLevel + 1);
-				}
 			}
 		}
 	}
@@ -469,10 +465,26 @@ public class PlayerController : MonoBehaviour
 		else if (gameEnded){
 			if (winLevel){
 				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "You Win! \nPress Q to Restart \nPress N to go to next level");
-
+				if (GUI.Button(new Rect (Screen.width *3 / 4 - Screen.width / 6, Screen.height *3 / 4 - verticalUnit, Screen.width / 6, verticalUnit), "Next") || Input.GetButtonDown ("NextLevel")) {
+					if (Application.loadedLevel < 3) {
+						Application.LoadLevel(Application.loadedLevel + 1);
+					}
+				}
 			} else {
 				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart");
 			}
+			if (GUI.Button(new Rect (Screen.width / 4 , Screen.height *3 / 4 - verticalUnit, Screen.width / 6, verticalUnit), "Reset")) {
+				if (Application.loadedLevel < 3) {
+					Application.LoadLevel(Application.loadedLevel);
+				}
+			}
+			if (GUI.Button(new Rect (Screen.width / 4 + Screen.width/6 , Screen.height *3 / 4 - verticalUnit, Screen.width / 6, verticalUnit), "Menu")) {
+				if (Application.loadedLevel < 3) {
+					Application.LoadLevel(0);
+				}
+			}
+
+
 		}
 		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
 		                                                                                                                    timeLeft.Minutes,
