@@ -216,6 +216,9 @@ public class PlayerController : MonoBehaviour
 
 
 			for (int i = 0; i < activeColour.Length; ++i){
+				if (Input.GetButtonDown(colourStrings[i+1])){
+					activeColour[i] = true;
+				}
 				if ((activeColour[i] && !activeColourLastFrame[i])&& colourEnergy[i]-activationEnergy>0){
 					activeColourLastFrame[i] = activeColour[i];
 					colourEnergy[i] -= activationEnergy;
@@ -628,6 +631,8 @@ public class PlayerController : MonoBehaviour
 
 	public void StartGame (){
 		if (!gameStarted){
+			print (gameTimeScale);
+			Time.timeScale=gameTimeScale;
 			gameStarted = true;
 		}
 	}

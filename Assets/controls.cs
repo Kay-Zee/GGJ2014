@@ -36,8 +36,8 @@ public class controls : MonoBehaviour {
 			colourButtons[i] = 	new Rect(Screen.width - Screen.height/3, Screen.height * i / 3, Screen.height/3, Screen.height/3);
 		}
 		movementContainer = new Rect(0,0,Screen.width/2, Screen.height);
-		joyBaseContainer = new Rect(0,0,verticalUnit*2, verticalUnit*2);
-		joyStickContainer = new Rect(0,0,verticalUnit, verticalUnit);
+		joyBaseContainer = new Rect(0,0,verticalUnit*4, verticalUnit*4);
+		joyStickContainer = new Rect(0,0,joyBaseContainer.width/2, joyBaseContainer.height/2);
 	}
 	
 	// Update is called once per frame
@@ -153,16 +153,16 @@ public class controls : MonoBehaviour {
 			joyBaseContainer.y = movementStartPos.y-joyBaseContainer.height/2;
 			joyStickContainer.x = movementCurrentPos.x-joyStickContainer.width/2;
 
-			if (joyStickContainer.x<joyBaseContainer.x)
-				joyStickContainer.x = joyBaseContainer.x;
-			else if (joyStickContainer.x>joyBaseContainer.x+joyBaseContainer.width)
-				joyStickContainer.x = joyBaseContainer.x + joyBaseContainer.width;
+			if (joyStickContainer.x+joyStickContainer.width/2<joyBaseContainer.x)
+				joyStickContainer.x = joyBaseContainer.x-joyStickContainer.width/2;
+			else if (joyStickContainer.x+joyStickContainer.width/2>joyBaseContainer.x+joyBaseContainer.width)
+				joyStickContainer.x = joyBaseContainer.x + joyBaseContainer.width-joyStickContainer.width/2;
 
 			joyStickContainer.y = movementCurrentPos.y-joyStickContainer.height/2;
-			if (joyStickContainer.y<joyBaseContainer.y)
-				joyStickContainer.y = joyBaseContainer.y;
-			else if (joyStickContainer.y>joyBaseContainer.y+joyBaseContainer.height)
-				joyStickContainer.y = joyBaseContainer.y + joyBaseContainer.height;
+			if (joyStickContainer.y+joyStickContainer.height/2<joyBaseContainer.y)
+				joyStickContainer.y = joyBaseContainer.y-joyStickContainer.height/2;
+			else if (joyStickContainer.y+joyStickContainer.height/2>joyBaseContainer.y+joyBaseContainer.height)
+				joyStickContainer.y = joyBaseContainer.y + joyBaseContainer.height-joyStickContainer.height/2;
 
 			GUI.Label(joyBaseContainer, texJoyBase);
 			GUI.Label(joyStickContainer, texJoyStick);
