@@ -8,6 +8,8 @@ public class controls : MonoBehaviour {
 	private int verticalUnit = Screen.height/9;
 	private int spacingUnit = Screen.width/32;
 
+	public GUIStyle joyStickStyle;
+
 	public Texture2D texJoyBase;
 	public Texture2D texJoyStick;
 
