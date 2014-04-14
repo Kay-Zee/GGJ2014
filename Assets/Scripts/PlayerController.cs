@@ -589,6 +589,11 @@ public class PlayerController : MonoBehaviour
 
 	}
 
+	void death() {
+		gameEnded = true;
+
+	}
+
 	void allowSpring()
 	{
 		springing = false;

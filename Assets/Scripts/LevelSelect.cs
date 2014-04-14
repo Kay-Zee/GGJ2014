@@ -13,6 +13,8 @@ public class LevelSelect : MonoBehaviour {
 	private string[] levels;
 	private Rect rLevels, rTitle, rSelect;
 	public GUIStyle style;
+	public Font defaultFont;
+
 
 	// Level Selecting int
 	private int levelSelect = 0;
@@ -35,6 +37,7 @@ public class LevelSelect : MonoBehaviour {
 		dimension = Screen.height - spacingUnit * 6 - verticalUnit;
 		rLevels = new Rect (spacingUnit*10, spacingUnit*3, dimension, dimension/3);
 		rSelect = new Rect (Screen.width / 2 - horizontalUnit*2, Screen.height-spacingUnit*7-verticalUnit, horizontalUnit * 4, verticalUnit);
+
 	}
 
 	void Wait () {
@@ -47,6 +50,10 @@ public class LevelSelect : MonoBehaviour {
 	}
 
 	void OnGUI () {
+		GUI.skin.font = defaultFont;
+		GUI.skin.button.font = defaultFont;
+		GUI.skin.label.font = defaultFont;
+		GUI.skin.box.font = defaultFont;
 		if (showLevels) {
 			levelSelect = GUI.SelectionGrid (rLevels, levelSelect, levels, 3, style);
 			if (GUI.Button (rSelect, "Select Level")) {
