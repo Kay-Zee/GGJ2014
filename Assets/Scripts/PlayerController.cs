@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
 	public bool[] activeColour;			// Is green activated
 	public bool[] activeColourLastFrame;			// Is green activated
 
-	public Texture2D line;
+	public Texture2D container;
 	public Texture2D[] colourTex;
 
 	private int[] colourLayers;
@@ -494,29 +494,26 @@ public class PlayerController : MonoBehaviour
 
 
 		}
-		GUI.Box (new Rect (spacingUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
+		GUI.Box (new Rect (spacingUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}",
 		                                                                                                                    timeLeft.Minutes,
-		                                                                                                                    timeLeft.Seconds,timeLeft.Milliseconds/100));
-
+		                                                                                                                    timeLeft.Seconds));
+		// Indicator bars
 		for (int i = 0; i< colourEnergy.Length; ++i){
+			// Container
 			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,
-			                          (i+1.5f)*spacingUnit/3,
+			                          (i+1)*spacingUnit/1.5f,
 			                          Screen.width-Screen.height*2/3-spacingUnit, 
-			                          spacingUnit/10),
-			                line);		
-
+			                          spacingUnit/1.5f),
+			                container,
+			                ScaleMode.StretchToFill);		
+			// Colour texture
 			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,
-			                          (i+1)*spacingUnit/3,
+			                          (i+1)*spacingUnit/1.5f,
 			                          (Screen.width-Screen.height*2/3-spacingUnit)*((float)colourEnergy[i]/maxEnergy), 
-			                          spacingUnit/4),
-			                colourTex[i]);		
-		}
-		/* Refactored into for loop
-		GUI.DrawTexture(new Rect ((int) (spacingUnit/2), (spacingUnit/2)+(verticalUnit*2)*(1-(float)redEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)redEnergy/maxEnergy)),redTex);		
-		GUI.DrawTexture(new Rect ((int) (spacingUnit)+horizontalUnit/2, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)greenEnergy/maxEnergy), horizontalUnit/2,(verticalUnit*2)*((float)greenEnergy/maxEnergy)),greenTex);		
-		GUI.DrawTexture(new Rect ((int) (spacingUnit*3/2)+horizontalUnit, (spacingUnit/2)+(verticalUnit*2)*(1 - (float)blueEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)blueEnergy/maxEnergy)),blueTex);		
-		*/
-		
+			                          spacingUnit/1.5f),
+			                colourTex[i],
+			                ScaleMode.ScaleAndCrop);		
+		}		
 	}
 	
 	
