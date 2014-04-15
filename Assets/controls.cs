@@ -17,7 +17,7 @@ public class controls : MonoBehaviour {
 
 	private bool[] colourPressed = {false, false, false};
 
-	private int threshHold = Screen.width/20;
+	private int threshHold = Screen.width/50;
 	private float vertical;
 	private float horizontal;
 
@@ -47,6 +47,7 @@ public class controls : MonoBehaviour {
 		joyStickStyle.stretchHeight = true;
 		joyBaseContainer = new Rect(0,0,verticalUnit*3, verticalUnit*3);
 		joyStickContainer = new Rect(0,0,joyBaseContainer.width*2/3, joyBaseContainer.height*2/3);
+
 	}
 	
 	// Update is called once per frame
@@ -156,9 +157,9 @@ public class controls : MonoBehaviour {
 			vertical = 0;
 		}
 		if (deltaX > threshHold){
-			horizontal = Mathf.Clamp(deltaX/(Screen.width/4), -1, 1);
+			horizontal = Mathf.Clamp(deltaX/(joyBaseContainer.width/2), -1, 1);
 		} else if (deltaX < -threshHold){
-			horizontal = Mathf.Clamp(deltaX/(Screen.width/4), -1, 1);
+			horizontal = Mathf.Clamp(deltaX/(joyBaseContainer.width/2), -1, 1);
 		} else {
 			horizontal = 0;
 		}

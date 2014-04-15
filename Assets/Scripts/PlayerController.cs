@@ -358,8 +358,14 @@ public class PlayerController : MonoBehaviour
 				Flip();
 
 			// calculate adding the force ourselves: acceleration = Force/mass ... and clamp the velocity 
-			horizVel = Mathf.Clamp(horizVel + (h+horizontalTouch)*(moveForce/rigidbody2D.mass)*Time.deltaTime, -maxSpeed, maxSpeed);
-			
+			//horizVel = Mathf.Clamp(horizVel + (h+horizontalTouch)*(moveForce/rigidbody2D.mass)*Time.deltaTime, -maxSpeed, maxSpeed);
+			float tempH;
+			if (Mathf.Abs(h)>Mathf.Abs(horizontalTouch)){
+				tempH = h;
+			} else {
+				tempH = horizontalTouch;
+			}
+			horizVel = Mathf.Clamp(tempH*maxSpeed, -maxSpeed, maxSpeed);
 			Vector3 vel = rigidbody2D.velocity;
 			if (h == 0 && horizontalTouch == 0) {
 				horizVel = 0;
@@ -389,8 +395,9 @@ public class PlayerController : MonoBehaviour
 
 				// Add a vertical force to the player.
 				if (System.DateTime.Now.CompareTo(jumpAllowedAfter)>0){
+					jumpAllowedAfter = System.DateTime.Now.AddMilliseconds(500);
 					rigidbody2D.AddForce(new Vector2(0f, jumpForce));
-					jumpAllowedAfter = System.DateTime.Now.AddMilliseconds(50);
+
 
 				}
 
@@ -487,18 +494,22 @@ public class PlayerController : MonoBehaviour
 
 
 		}
-		GUI.Box (new Rect (Screen.width - 2 * horizontalUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
+		GUI.Box (new Rect (spacingUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}:{2}",
 		                                                                                                                    timeLeft.Minutes,
-		                                                                                                                    timeLeft.Seconds,timeLeft.Milliseconds));
+		                                                                                                                    timeLeft.Seconds,timeLeft.Milliseconds/100));
 
 		for (int i = 0; i< colourEnergy.Length; ++i){
 			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,
-			                          i*spacingUnit/3,
+			                          (i+1.5f)*spacingUnit/3,
 			                          Screen.width-Screen.height*2/3-spacingUnit, 
 			                          spacingUnit/10),
 			                line);		
 
-			GUI.DrawTexture(new Rect ((spacingUnit*(i+1)/2)+horizontalUnit*i/2, (spacingUnit/2)+(verticalUnit*2)*(1-(float)colourEnergy[i]/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)colourEnergy[i]/maxEnergy)),colourTex[i]);		
+			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,
+			                          (i+1)*spacingUnit/3,
+			                          (Screen.width-Screen.height*2/3-spacingUnit)*((float)colourEnergy[i]/maxEnergy), 
+			                          spacingUnit/4),
+			                colourTex[i]);		
 		}
 		/* Refactored into for loop
 		GUI.DrawTexture(new Rect ((int) (spacingUnit/2), (spacingUnit/2)+(verticalUnit*2)*(1-(float)redEnergy/maxEnergy),horizontalUnit/2,(verticalUnit*2)*((float)redEnergy/maxEnergy)),redTex);		
