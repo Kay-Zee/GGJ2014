@@ -8,7 +8,7 @@ public class LevelSelect : MonoBehaviour {
 	private int verticalUnit = Screen.height/9;
 	private int spacingUnit = Screen.width/32;
 
-	private int totalLevels = 3;
+	private int totalLevels = 6;
 	private int dimension = 0;
 	private string[] levels;
 	private Rect rLevels, rTitle, rSelect;
@@ -55,10 +55,10 @@ public class LevelSelect : MonoBehaviour {
 		GUI.skin.label.font = defaultFont;
 		GUI.skin.box.font = defaultFont;
 		if (showLevels) {
-			levelSelect = GUI.SelectionGrid (rLevels, levelSelect, levels, 3, style);
+			levelSelect = GUI.SelectionGrid (rLevels, levelSelect, levels, 6, style);
 			if (GUI.Button (rSelect, "Select Level")) {
 				print ("Player selected " + levels [levelSelect]);
-				Application.LoadLevel ("Level_0" + (levelSelect + 1).ToString ());
+				Application.LoadLevel (levelSelect + 1);
 			}
 		}
 	}
