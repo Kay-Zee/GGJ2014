@@ -494,25 +494,27 @@ public class PlayerController : MonoBehaviour
 
 
 		}
-		GUI.Box (new Rect (spacingUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}",
-		                                                                                                                    timeLeft.Minutes,
-		                                                                                                                    timeLeft.Seconds));
+
+		// Countdown
+		GUI.Box (new Rect (spacingUnit, spacingUnit, horizontalUnit * 2, verticalUnit), string.Format("{0}:{1}", timeLeft.Minutes, timeLeft.Seconds));
+
 		// Indicator bars
 		for (int i = 0; i< colourEnergy.Length; ++i){
-			// Container
-			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,
-			                          (i+1)*spacingUnit/1.5f,
-			                          Screen.width-Screen.height*2/3-spacingUnit, 
-			                          spacingUnit/1.5f),
-			                container,
-			                ScaleMode.StretchToFill);		
 			// Colour texture
-			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,
-			                          (i+1)*spacingUnit/1.5f,
-			                          (Screen.width-Screen.height*2/3-spacingUnit)*((float)colourEnergy[i]/maxEnergy), 
-			                          spacingUnit/1.5f),
+			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,				// top
+			                          (i+1)*spacingUnit/1.5f,						// left
+			                          (Screen.width-Screen.height*2/3-spacingUnit)*((float)colourEnergy[i]/maxEnergy), // width
+			                          spacingUnit/1.5f),							// height
 			                colourTex[i],
-			                ScaleMode.ScaleAndCrop);		
+			                ScaleMode.ScaleAndCrop);	
+
+			// Container
+			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,				// top
+			                          (i+1)*spacingUnit/1.5f,						// left
+			                          Screen.width-Screen.height*2/3-spacingUnit,	// width
+			                          spacingUnit/1.5f),							// height
+			                container,
+			                ScaleMode.StretchToFill);			
 		}		
 	}
 	
