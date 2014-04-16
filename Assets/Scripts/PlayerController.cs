@@ -500,14 +500,22 @@ public class PlayerController : MonoBehaviour
 
 		// Indicator bars
 		for (int i = 0; i< colourEnergy.Length; ++i){
+			GUI.DrawTextureWithTexCoords(new Rect (Screen.height/3+spacingUnit/2,				// top
+			                          (i+1)*spacingUnit/1.5f,						// left
+			                          (Screen.width-Screen.height*2/3-spacingUnit)*((float)colourEnergy[i]/maxEnergy), // width
+			                          spacingUnit/1.5f),							// height
+			                colourTex[i],
+			                new Rect (0f,0f,(float)colourEnergy[i]/maxEnergy, 1f),
+			                true);	
 			// Colour texture
+			/*
 			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,				// top
 			                          (i+1)*spacingUnit/1.5f,						// left
 			                          (Screen.width-Screen.height*2/3-spacingUnit)*((float)colourEnergy[i]/maxEnergy), // width
 			                          spacingUnit/1.5f),							// height
 			                colourTex[i],
 			                ScaleMode.ScaleAndCrop);	
-
+			*/
 			// Container
 			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,				// top
 			                          (i+1)*spacingUnit/1.5f,						// left
