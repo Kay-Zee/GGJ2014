@@ -79,7 +79,6 @@ public class PlayerController : MonoBehaviour
 		colourStrings[3] = "Blue";
 
 		// Initialize Energy levels
-		//colourTex=new Texture2D[numColours];
 		colourEnergy = new float[numColours];
 		for (int i = 0; i < colourEnergy.Length; ++i)
 			colourEnergy[i]=50;
@@ -96,20 +95,6 @@ public class PlayerController : MonoBehaviour
 			if (i>0)
 				ActivateGameObjects(layerObjects[i], false);
 		}
-
-		/*
-		redLayer = LayerMask.NameToLayer("Red");
-		greenLayer = LayerMask.NameToLayer ("Green");
-		blueLayer = LayerMask.NameToLayer ("Blue");
-		grayLayer = LayerMask.NameToLayer ("Gray");
-		redLayerObjects = FindGameObjectsWithLayer (redLayer);
-		greenLayerObjects = FindGameObjectsWithLayer (greenLayer);
-		blueLayerObjects = FindGameObjectsWithLayer (blueLayer);
-		grayLayerObjects = FindGameObjectsWithLayer (grayLayer);
-		ActivateGameObjects(redLayerObjects, false);
-		ActivateGameObjects(greenLayerObjects, false);
-		ActivateGameObjects(blueLayerObjects, false);
-		*/
 
 		// Setting up booleans
 		activeColour = new bool[3];
@@ -156,29 +141,6 @@ public class PlayerController : MonoBehaviour
 						performAction(colourHit[i],i);
 				}
 			}
-
-			/* Refactored into a for loop
-			if (red){
-				hit[0] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
-				hitRed = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Red"));  
-				if (hit[0]) 
-					performAction(hitRed,0);
-			}
-			if (green){
-				hit[1] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Green"));  
-				hitGreen = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Green"));  
-				if (hit[1])
-					performAction (hitGreen,1);
-			}
-			if (blue){
-				hit[2] = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Blue"));  
-				hitBlue = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Blue"));  
-				if (hit[2]) 
-					performAction (hitBlue, 2);
-			}
-
-			*/
-
 
 			if(consolidateBoolArray(spring))
 			{
@@ -236,65 +198,6 @@ public class PlayerController : MonoBehaviour
 				}
 			}
 
-
-			/* Refactored to for loop
-			if (Input.GetButtonDown ("Green")) {
-				if (!green && greenEnergy-activationEnergy>0){
-					greenEnergy = greenEnergy-activationEnergy;
-					green = true;
-					red = false;
-					blue = false;
-					//ActivateGameObjects(greenLayerObjects, true);
-				} else {
-					green = false;
-					//ActivateGameObjects(greenLayerObjects, false);
-				}
-			}
-			if (green) {
-				anim.SetBool("Green",true);
-				ActivateGameObjects(greenLayerObjects, true);
-			} else {
-				anim.SetBool("Green",false);
-				ActivateGameObjects(greenLayerObjects, false);
-			}
-			if (Input.GetButtonDown ("Red")) {
-				if (!red && redEnergy-activationEnergy>0){
-					redEnergy = redEnergy-activationEnergy;
-					red = true;
-					green = false;
-					blue = false;
-				} else {
-					red = false;
-
-				}
-			}
-			if (red) {
-				anim.SetBool("Red",true);
-				ActivateGameObjects(redLayerObjects, true);
-			} else {
-				anim.SetBool("Red",false);
-				ActivateGameObjects(redLayerObjects, false);
-			}
-			if (Input.GetButtonDown ("Blue")) {
-				if (!blue && blueEnergy-activationEnergy>0){
-					blueEnergy = blueEnergy-activationEnergy;
-					blue = true;
-					red = false;
-					green = false;
-					//ActivateGameObjects(blueLayerObjects, true);
-				} else {
-					blue = false;
-					//ActivateGameObjects(blueLayerObjects, false);
-				}
-			}
-			if (blue) {
-				anim.SetBool("Blue",true);
-				ActivateGameObjects(blueLayerObjects, true);
-			} else {
-				anim.SetBool("Blue",false);
-				ActivateGameObjects(blueLayerObjects, false);
-			}
-			*/
 			if (consolidateBoolArray(activeColour)){
 				anim.SetBool(colourStrings[0],false);
 				ActivateGameObjects(layerObjects[0], false);
@@ -371,18 +274,7 @@ public class PlayerController : MonoBehaviour
 				horizVel = 0;
 			}
 			vel.x = horizVel;
-
-
-
-			/*
-			// If the player's horizontal velocity is greater than the maxSpeed...
-			if(Mathf.Abs(rigidbody2D.velocity.x) > maxSpeed)
-				// ... set the player's velocity to the maxSpeed in the x axis.
-				rigidbody2D.velocity = new Vector2(Mathf.Sign(rigidbody2D.velocity.x) * maxSpeed, rigidbody2D.velocity.y);
-*/
-
-
-
+		
 			rigidbody2D.velocity = vel;
 			// If the player should jump...
 			if(jump)
@@ -406,19 +298,15 @@ public class PlayerController : MonoBehaviour
 
 			} 
 
-			//if we are in the state jump and i am ground than go to idle
-
+			// if we are in the state jump and i am ground than go to idle
 			AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);			
 			
 			if (stateInfo.IsName("player_green_jump")||
 			    stateInfo.IsName("player_gray_jump")||
 			    stateInfo.IsName("player_blue_jump")||
-			    stateInfo.IsName("player_red_jump"))
+			    stateInfo.IsName("player_red_jump")) {
 
-			{
-
-				if(grounded)
-				{
+				if(grounded) {
 					print ("touching ground");
 					anim.SetTrigger("Touchground");
 				}
@@ -434,30 +322,6 @@ public class PlayerController : MonoBehaviour
 					}
 				}
 			}
-				
-			/* Refactored to for loop
-			if (green){
-				greenEnergy -= energyDrainRate;
-				if (greenEnergy < 0) {
-					greenEnergy=0;
-					green = false;
-				}
-			}
-			if (red) {
-				redEnergy -= energyDrainRate;
-				if (redEnergy < 0) {
-					redEnergy=0;
-					red = false;
-				}
-			}
-			if (blue){
-				blueEnergy -= energyDrainRate;
-				if (blueEnergy < 0) {
-					blueEnergy=0;
-					blue = false;
-				}
-			}
-			*/
 		}
 		if (gameEnded)
 			Time.timeScale = 0;
@@ -500,22 +364,15 @@ public class PlayerController : MonoBehaviour
 
 		// Indicator bars
 		for (int i = 0; i< colourEnergy.Length; ++i){
-			GUI.DrawTextureWithTexCoords(new Rect (Screen.height/3+spacingUnit/2,				// top
+			// Colour texture
+			GUI.DrawTextureWithTexCoords(new Rect (Screen.height/3+spacingUnit/2,	// top
 			                          (i+1)*spacingUnit/1.5f,						// left
 			                          (Screen.width-Screen.height*2/3-spacingUnit)*((float)colourEnergy[i]/maxEnergy), // width
 			                          spacingUnit/1.5f),							// height
 			                colourTex[i],
 			                new Rect (0f,0f,(float)colourEnergy[i]/maxEnergy, 1f),
 			                true);	
-			// Colour texture
-			/*
-			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,				// top
-			                          (i+1)*spacingUnit/1.5f,						// left
-			                          (Screen.width-Screen.height*2/3-spacingUnit)*((float)colourEnergy[i]/maxEnergy), // width
-			                          spacingUnit/1.5f),							// height
-			                colourTex[i],
-			                ScaleMode.ScaleAndCrop);	
-			*/
+
 			// Container
 			GUI.DrawTexture(new Rect (Screen.height/3+spacingUnit/2,				// top
 			                          (i+1)*spacingUnit/1.5f,						// left
@@ -640,19 +497,6 @@ public class PlayerController : MonoBehaviour
 		if (!eatMonster){
 			gameEnded = true;
 		}
-		
-
-		/* Refactored into for loop
-		if ((color.Equals ("red") && red)) {
-			redEnergy += 50;
-		} else if (color.Equals ("blue") && blue) {
-			blueEnergy += 50;
-		} else if (color.Equals ("green") && green) {
-			greenEnergy += 50;
-		} else {
-			gameEnded = true;
-		}
-		*/
 			
 	}
 
