@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
 	private bool hasKey = false;
 
 	[HideInInspector]
+	public bool pause = false;	
+	[HideInInspector]
 	public bool facingRight = true;			// For determining which way the player is currently facing.
 	[HideInInspector]
 	public bool jump = false;				// Condition for whether the player should jump.
@@ -77,7 +79,9 @@ public class PlayerController : MonoBehaviour
 		colourStrings[1] = "Red";
 		colourStrings[2] = "Green";
 		colourStrings[3] = "Blue";
-
+		colourTex = new Texture2D[3];
+		for (int i = 0; i< colourTex.Length; i++)
+			colourTex [i] = Resources.Load <Texture2D>("UI Elements/" + colourStrings [i + 1]);
 		// Initialize Energy levels
 		colourEnergy = new float[numColours];
 		for (int i = 0; i < colourEnergy.Length; ++i)
@@ -116,11 +120,16 @@ public class PlayerController : MonoBehaviour
 		animSplatter = transform.FindChild("splatter_of_paint").GetComponent<Animation>();
 		Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer ("Ground"), false);
 
+
+
 	}
 
 
 	void Update()
 	{
+		if (pause) {
+			return;
+		}
 		if (!gameStarted) {
 			if(Input.GetButtonDown("Jump")){
 				print (gameTimeScale);
@@ -216,6 +225,9 @@ public class PlayerController : MonoBehaviour
 
 	void FixedUpdate ()
 	{
+		if (pause) {
+			return;
+		}
 		if (gameStarted && !gameEnded){
 			timeLeft = timeLeft.Subtract (System.TimeSpan.FromSeconds(Time.fixedDeltaTime));
 			if (timeLeft.TotalMilliseconds<0){
