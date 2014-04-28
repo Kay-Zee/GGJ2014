@@ -11,8 +11,10 @@ public class PlayerController : MonoBehaviour
 	private float gameTimeScale;
 	private System.TimeSpan timeLeft;
 	private System.DateTime jumpAllowedAfter = System.DateTime.Now;
-
+	private Texture2D texCuecard;
 	private bool hasKey = false;
+	private GUIStyle textStyle = new GUIStyle();
+	private Font textFont;
 
 	[HideInInspector]
 	public bool pause = false;	
@@ -74,6 +76,9 @@ public class PlayerController : MonoBehaviour
 		gameTimeScale = 1;
 		timeLeft = System.TimeSpan.FromSeconds (90);
 		rigidbody2D.gravityScale=1f;
+		textFont = Resources.Load<Font> ("UI Elements/Archistico_Bold");
+		textStyle.font = textFont;
+		textStyle.alignment = TextAnchor.MiddleCenter;
 		colourStrings = new string[numColours+1];
 		colourStrings[0] = "Gray";
 		colourStrings[1] = "Red";
@@ -343,11 +348,16 @@ public class PlayerController : MonoBehaviour
 	void OnGUI() {
 		GUI.skin.box.fontSize = spacingUnit;
 		GUI.skin.box.alignment = TextAnchor.MiddleCenter;
-		if (!gameStarted)
-			GUI.Box (new Rect (Screen.width / 2 - horizontalUnit*3, spacingUnit, horizontalUnit * 6, verticalUnit), "Press Space to Start");
-		else if (gameEnded){
+		if (texCuecard == null)
+			texCuecard = Resources.Load<Texture2D> ("UI Elements/cue_card");
+		if (!gameStarted) {
+			GUI.Label (new Rect (Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2), texCuecard);
+
+			GUI.Label (new Rect (Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2), "Press Space to Start", textStyle);
+		} else if (gameEnded){
 			if (winLevel){
-				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "You Win! \nPress Q to Restart \nPress N to go to next level");
+				GUI.Label (new Rect (Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2), texCuecard);
+				GUI.Label (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "You Win! \nPress Q to Restart \nPress N to go to next level", textStyle);
 				if ((Application.loadedLevel < NUM_LEVELS) && 
 				    (GUI.Button(new Rect (Screen.width *3 / 4 - Screen.width / 6, Screen.height *3 / 4 - verticalUnit, Screen.width / 6, verticalUnit), "Next") || Input.GetButtonDown ("NextLevel"))) {
 					if (Application.loadedLevel < NUM_LEVELS) {
@@ -355,7 +365,9 @@ public class PlayerController : MonoBehaviour
 					}
 				}
 			} else {
-				GUI.Box (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart");
+				GUI.Label (new Rect (Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2), texCuecard);
+
+				GUI.Label (new Rect (Screen.width / 4 , Screen.height / 4, Screen.width / 2, Screen.height / 2), "Game Over! \nPress Q to Restart", textStyle);
 			}
 			if (GUI.Button(new Rect (Screen.width / 4 , Screen.height *3 / 4 - verticalUnit, Screen.width / 6, verticalUnit), "Reset")) {
 				if (Application.loadedLevel < NUM_LEVELS) {
